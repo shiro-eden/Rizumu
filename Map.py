@@ -1,0 +1,93 @@
+import os
+from pprint import pprint
+
+maps = []
+
+
+class Map():
+    def __init__(self, foldername, filename):
+        file = open(f'Songs\\{foldername}\\{filename}').read().split('\n')
+
+        general_line = file.index('[General]')
+        self.general = {}
+        cur_line = general_line + 1
+        while file[cur_line].lstrip() != '':
+            current = file[cur_line]
+            tag = current[:current.find(':')]
+            info = current[current.find(':') + 1:]
+            self.general[tag] = info.lstrip()
+            cur_line += 1
+
+        difficulty_line = file.index('[Difficulty]')
+        self.difficulty = {}
+        cur_line = difficulty_line + 1
+        while file[cur_line].lstrip() != '':
+            current = file[cur_line]
+            tag = current[:current.find(':')]
+            info = current[current.find(':') + 1:]
+            self.difficulty[tag] = info.lstrip()
+            cur_line += 1
+
+        metadata_line = file.index('[Metadata]')
+        self.metadata = {}
+        cur_line = metadata_line + 1
+        while file[cur_line].lstrip() != '':
+            current = file[cur_line]
+            tag = current[:current.find(':')]
+            info = current[current.find(':') + 1:]
+            self.metadata[tag] = info.lstrip()
+            cur_line += 1
+
+        events_line = file.index('[Events]')
+        self.events = []
+        cur_line = events_line + 1
+        while file[cur_line].lstrip() != '':
+            current = file[cur_line]
+            current = current.split(',')
+            current = [i.lstrip() for i in current]
+            self.events.append(current)
+            cur_line += 1
+
+        self.audio_file_name = self.general['AudioFilename']
+        self.mode = self.general['Mode']
+        self.audio_lead_in = self.general['AudioLeadIn']
+
+        self.title = self.metadata['Title']
+        self.artist = self.metadata['Artist']
+        self.creator = self.metadata['Creator']
+        self.version = self.metadata['Version']
+
+        self.HP = self.difficulty['HPDrainRate']
+        self.OD = self.difficulty['OverallDifficulty']
+
+        objects_line = file.index('[HitObjects]')
+        self.objects = []
+        cur_line = objects_line + 1
+        while cur_line < len(file) and file[cur_line].lstrip() != '':
+            current = file[cur_line]
+            current = current[:current.find(':')]
+            current = current.split(',')
+            current = [i.lstrip() for i in current]
+            self.objects.append(current)
+            cur_line += 1
+        for i, elem in enumerate(self.objects):
+            x, y, time, type, *another = elem
+            if int(type) == 128:
+                end_time = int(elem[5])
+            else:
+                end_time = 0
+            self.objects[i] = [int(x) // (512 // 4), int(time), int(type), int(end_time)]
+
+
+def import_maps():  # Создает объекты класса Map, помещает их в maps
+    songs = os.listdir(path="Songs")
+    for song in songs:
+        file_names = os.listdir(path=f'Songs/{song}')
+        diffs = [diff for diff in file_names if diff.endswith('.osu')]
+        for diff in diffs:
+            map = Map(song, diff)
+            if map.mode == '3':
+                maps.append(map)
+
+
+import_maps()
