@@ -46,6 +46,11 @@ def select_map():
                 k = 80
             pygame.draw.rect(display, pygame.Color('white'), (260, scroll_y + temp * (50 + k), 600, 80))
         pygame.display.flip()
+        res = screen.get_result()
+        if res != -1:
+            game = False
+    if res == 1:
+        start_menu()
 
 
 if __name__ == '__main__':
