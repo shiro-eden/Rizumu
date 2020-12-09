@@ -1,4 +1,7 @@
 import pygame
+import os
+from Map import Map
+from Map import import_maps
 from GameParameter import clock
 from StartMenu import StartMenu
 from SelectMenu import SelectMenu
@@ -6,7 +9,6 @@ from SelectMenu import SelectMenu
 
 def start_menu():
     screen = StartMenu()
-
     game = True
     while game:
         for event in pygame.event.get():
@@ -25,27 +27,36 @@ def start_menu():
 
 
 def select_map():
-    screen = SelectMenu()
+    maps = import_maps()
+    screen = SelectMenu(maps)
 
     game = True
-    scroll_y = 100
     while game:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 game = False
             if event.type == pygame.MOUSEBUTTONDOWN:
+                max_y = max(screen.maps, key=lambda x: x[0])[0]
+                min_y = min(screen.maps, key=lambda x: x[0])[0]
                 if event.button == 4:
-                    scroll_y = max(scroll_y - 30, 100)
+                    if min_y >= 90:
+                        continue
+                    for i, elem in enumerate(screen.maps):
+                        maps[i][0] += 40
+                    screen.render()
+                    pygame.display.flip()
                 if event.button == 5:
-                    scroll_y = min(scroll_y + 30, 540)
+                    print(max_y)
+                    if max_y <= 550:
+                        continue
+                    for i, elem in enumerate(screen.maps):
+                        maps[i][0] -= 40
+                    screen.render()
+                    pygame.display.flip()
 
-        screen.draw()
-        k = 0
-        for temp in range(3):  # как примерно будут отображаться карты
-            if temp != 0:
-                k = 80
-            pygame.draw.rect(display, pygame.Color('white'), (260, scroll_y + temp * (50 + k), 600, 80))
+        screen.render()
         pygame.display.flip()
+
         res = screen.get_result()
         if res != -1:
             game = False

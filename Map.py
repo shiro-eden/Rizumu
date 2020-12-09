@@ -81,6 +81,7 @@ class Map():
 
 def import_maps():  # Создает объекты класса Map, помещает их в maps
     songs = os.listdir(path="Songs")
+    maps = []
     for song in songs:
         file_names = os.listdir(path=f'Songs/{song}')
         diffs = [diff for diff in file_names if diff.endswith('.osu')]
@@ -88,6 +89,4 @@ def import_maps():  # Создает объекты класса Map, помещ
             map = Map(song, diff)
             if map.mode == '3':
                 maps.append(map)
-
-
-import_maps()
+    return maps
