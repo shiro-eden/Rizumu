@@ -14,7 +14,7 @@ class SelectMenu:
 
         image = [(pygame.image.load(f'image/chr_button_{i}.png'), 0, 0) for i in range(4)]
         image.append(pygame.image.load(f'image/chr_button_shadow.png'))
-        self.chr_btn = Button(0, 0, 223, 92, '', image, self.confirm)
+        self.chr_btn = Button(0, 0, 223, 92, '', image, self.chr_menu)
 
     def draw(self):
         display.blit(pygame.image.load('image/menu_background.png'), (0, 0))
