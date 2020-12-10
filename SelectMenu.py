@@ -40,11 +40,11 @@ class SelectMenu:
                 pygame.draw.rect(display, pygame.Color(255, 255, 255, 100), (500, y, 600, 80))
                 title, artist, creator, version = map.title, map.artist, map.creator, map.version
                 drawing_text(title, (510, y + 10), font_color=pygame.Color(80, 80, 80),
-                             font_size=30)
+                             font_size=30, font_type='rizumu.ttf')
                 drawing_text(artist, (510, y + 35), font_color=pygame.Color(100, 100, 100),
-                             font_size=20)
+                             font_size=20, font_type='rizumu.ttf')
                 drawing_text(version, (510, y + 55), font_color=pygame.Color(0, 0, 0),
-                             font_size=30)
+                             font_size=25, font_type='rizumu.ttf')
 
         display.blit(pygame.image.load('image/menu_back+.png'), (224, 640))
         display.blit(pygame.image.load('image/menu+.png'), (219, -4))
