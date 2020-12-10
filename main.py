@@ -1,13 +1,15 @@
 import pygame
+from Map import Map, import_maps
 from GameParameter import clock
 from StartMenu import StartMenu
 from SelectMenu import SelectMenu
+from CharacterMenu import CharacterMenu
 
 
 def start_menu():
     screen = StartMenu()
-
     game = True
+    res = -1
     while game:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -25,32 +27,68 @@ def start_menu():
 
 
 def select_map():
-    screen = SelectMenu()
+    maps = import_maps()
+    screen = SelectMenu(maps)
 
     game = True
-    scroll_y = 100
+    res = -1
     while game:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 game = False
             if event.type == pygame.MOUSEBUTTONDOWN:
+                max_y = max(screen.maps, key=lambda x: x[0])[0]
+                min_y = min(screen.maps, key=lambda x: x[0])[0]
                 if event.button == 4:
-                    scroll_y = max(scroll_y - 30, 100)
+                    if min_y >= 90:
+                        continue
+                    for i, elem in enumerate(screen.maps):
+                        maps[i][0] += 40
+                    screen.render()
+                    pygame.display.flip()
                 if event.button == 5:
-                    scroll_y = min(scroll_y + 30, 540)
+                    if max_y <= 550:
+                        continue
+                    for i, elem in enumerate(screen.maps):
+                        maps[i][0] -= 40
+                    screen.render()
+                    pygame.display.flip()
 
-        screen.draw()
-        k = 0
-        for temp in range(3):  # как примерно будут отображаться карты
-            if temp != 0:
-                k = 80
-            pygame.draw.rect(display, pygame.Color('white'), (260, scroll_y + temp * (50 + k), 600, 80))
+        screen.render()
         pygame.display.flip()
+
         res = screen.get_result()
         if res != -1:
             game = False
     if res == 1:
         start_menu()
+    elif res == 2:
+        select_character()
+
+
+def select_character():
+    screen = CharacterMenu()
+
+    game = True
+    res = -1
+    while game:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                game = False
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                if event.button == 1:
+                    x, y = event.pos
+                    if 200 < x < 300 and 310 < y < 410:
+                        screen.switch_chr(-1)
+                    elif 820 < x < 920 and 310 < y < 410:
+                        screen.switch_chr(1)
+        screen.draw()
+        pygame.display.flip()
+        res = screen.get_result()
+        if res != -1:
+            game = False
+    if res == 0:
+        select_map()
 
 
 if __name__ == '__main__':

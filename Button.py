@@ -7,7 +7,7 @@ pygame.init()
 
 
 class Button:
-    def __init__(self, x, y, width, height, text, image, func):
+    def __init__(self, x, y, width, height, text, image, func=None):
         self.x = x
         self.y = y
         self.width = width
@@ -30,7 +30,7 @@ class Button:
                 if self.ind_image % self.count_img:
                     self.y -= y1
                     self.x -= x1
-            if click[0]:
+            if click[0] and self.func:
                 self.func()
         else:
             image, x1, y1 = self.image[self.ind_image // self.count_img]
@@ -41,4 +41,4 @@ class Button:
                     self.x += x1
 
         display.blit(image, (self.x, self.y))
-        drawing_text(self.text, x, y, (0, 0, 0), size)
+        drawing_text(self.text, (x, y), (0, 0, 0), size)
