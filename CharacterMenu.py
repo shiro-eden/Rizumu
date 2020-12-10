@@ -50,7 +50,6 @@ class CharacterMenu:
         drawing_text(text, cords, font_color=pygame.Color('White'),
                      font_size=70, font_type='rizumu.ttf')
 
-
         self.exit_btn.draw(0, 0)
         self.confirm_btn.draw(0, 0)
         self.left_button.draw(0, 0)

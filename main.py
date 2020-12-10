@@ -73,6 +73,9 @@ def select_map():
         start_menu()
     elif res == 2:
         select_character()
+    elif res == 3:
+        map = screen.get_map()
+        play_map(map)
 
 
 def select_character():
@@ -98,6 +101,10 @@ def select_character():
             game = False
     if res == 0:
         select_map()
+
+
+def play_map(map):
+    pass
 
 
 if __name__ == '__main__':

@@ -7,9 +7,9 @@ class StartMenu:
     def __init__(self):
         self.result = -1
 
-        image = (pygame.image.load('image/play_button.png'), 0, 1),\
-                (pygame.image.load('image/play_button_active.png'), 0, 1),\
-                pygame.image.load('image/play_button_shadow.png')
+        image = (pygame.image.load('image/start_button.png'), 0, 1),\
+                (pygame.image.load('image/start_button_active.png'), 0, 1),\
+                pygame.image.load('image/start_button_shadow.png')
         self.start_btn = Button(410, 200, 330, 69, '', image, self.new_game)
 
         image = (pygame.image.load('image/exit_button.png'), 0, 1),\

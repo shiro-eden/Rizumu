@@ -20,6 +20,11 @@ class SelectMenu:
         image.append(pygame.image.load(f'image/chr_button_shadow.png'))
         self.chr_btn = Button(0, 0, 223, 92, '', image, self.chr_menu)
 
+        image = [(pygame.image.load('image/play_button_0.png'), 0, 0),
+                 (pygame.image.load('image/play_button_1.png'), 0, 0),
+                 pygame.image.load('image/play_button_shadow.png')]
+        self.play_btn = Button(898, 640, 222, 92, '', image, self.start_game)
+
         self.menu_background = pygame.image.load('image/menu_background.png')
         self.song_rect = pygame.image.load('image/select_menu_rect.png')
         self.song_rect_active = pygame.image.load('image/select_menu_rect_active.png')
@@ -36,17 +41,26 @@ class SelectMenu:
     def chr_menu(self):
         self.result = 2
 
+    def start_game(self):
+        self.result = 3
+
     def get_result(self):
         return self.result
+
+    def get_map(self):
+        return self.maps[self.active_map]
 
     def render(self):
         mouse = pygame.mouse.get_pos()
         click = pygame.mouse.get_pressed()
         display.blit(self.menu_background, (0, 0))
         display.blit(self.back_mask, (0, 0))
-        self.exit_btn.draw(0, 0)
 
+        self.exit_btn.draw(0, 0)
+        self.play_btn.draw(0, 0)
         self.chr_btn.draw(0, 0)
+
+
         for i, elem in enumerate(self.maps):
             x, y, map = elem
             if 1020 >= y >= 20:
@@ -71,3 +85,4 @@ class SelectMenu:
 
         display.blit(self.menu_back_plus, (224, 640))
         display.blit(self.menu_plus, (219, -4))
+        self.play_btn.draw(0, 0)
