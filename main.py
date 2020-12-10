@@ -1,6 +1,6 @@
 import pygame
 from Map import Map, import_maps
-from GameParameter import clock
+from GameParameter import clock, fps
 from StartMenu import StartMenu
 from SelectMenu import SelectMenu
 from CharacterMenu import CharacterMenu
@@ -29,7 +29,8 @@ def start_menu():
 def select_map():
     maps = import_maps()
     screen = SelectMenu(maps)
-
+    max_y = max(screen.maps, key=lambda x: x[1])[1]
+    min_y = min(screen.maps, key=lambda x: x[1])[1]
     game = True
     res = -1
     while game:
@@ -37,23 +38,31 @@ def select_map():
             if event.type == pygame.QUIT:
                 game = False
             if event.type == pygame.MOUSEBUTTONDOWN:
-                max_y = max(screen.maps, key=lambda x: x[0])[0]
-                min_y = min(screen.maps, key=lambda x: x[0])[0]
                 if event.button == 4:
-                    if min_y >= 90:
+                    if min_y >= 96:
                         continue
-                    for i, elem in enumerate(screen.maps):
-                        maps[i][0] += 40
-                    screen.render()
-                    pygame.display.flip()
+                    for k in range(4):
+
+                        for i, elem in enumerate(screen.maps):
+                            if min_y >= 96:
+                                continue
+                            maps[i][1] += 13
+                        max_y += 13
+                        min_y += 13
+                        screen.render()
+                        pygame.display.flip()
                 if event.button == 5:
                     if max_y <= 550:
                         continue
-                    for i, elem in enumerate(screen.maps):
-                        maps[i][0] -= 40
-                    screen.render()
-                    pygame.display.flip()
-
+                    for k in range(4):
+                        for i, elem in enumerate(screen.maps):
+                            if max_y <= 550:
+                                continue
+                            maps[i][1] -= 13
+                        max_y -= 13
+                        min_y -= 13
+                        screen.render()
+                        pygame.display.flip()
         screen.render()
         pygame.display.flip()
 

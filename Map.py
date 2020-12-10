@@ -1,4 +1,5 @@
 import os
+import pygame
 from pprint import pprint
 
 maps = []
@@ -7,7 +8,7 @@ maps = []
 class Map():
     def __init__(self, foldername, filename):
         file = open(f'Songs\\{foldername}\\{filename}').read().split('\n')
-
+        self.dir = foldername
         general_line = file.index('[General]')
         self.general = {}
         cur_line = general_line + 1
@@ -78,6 +79,15 @@ class Map():
                 end_time = 0
             self.objects[i] = [int(x) // (512 // 4), int(time), int(type), int(end_time)]
 
+        for elem in self.events:
+            event_type, *another = elem
+            if event_type == '0':
+                c, background_file, x_offset, y_offset = another
+                self.x_offset = int(x_offset)
+                self.y_offset = int(y_offset)
+                self.background_file = background_file.rstrip('"').lstrip('"')
+                self.background = pygame.transform.smoothscale(pygame.image.load(f'Songs/{self.dir}/{self.background_file}'), (1120, 720))
+                self.small_background = pygame.transform.smoothscale(self.background, (120, 80))
 
 def import_maps():  # Создает объекты класса Map, помещает их в maps
     songs = os.listdir(path="Songs")

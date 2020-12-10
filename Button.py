@@ -2,7 +2,6 @@ import pygame
 from GameParameter import display
 from GameEffects import drawing_text
 
-
 pygame.init()
 
 
