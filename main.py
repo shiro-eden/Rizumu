@@ -2,6 +2,7 @@ import pygame
 from Map import Map, import_maps
 from GameParameter import clock, fps
 from StartMenu import StartMenu
+from Game import Game
 from SelectMenu import SelectMenu
 from CharacterMenu import CharacterMenu
 
@@ -39,28 +40,28 @@ def select_map():
                 game = False
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if event.button == 4:
-                    if min_y >= 96:
+                    if min_y >= 100:
                         continue
-                    for k in range(4):
+                    for k in range(1):
 
                         for i, elem in enumerate(screen.maps):
-                            if min_y >= 96:
+                            if min_y >= 100:
                                 continue
-                            maps[i][1] += 13
-                        max_y += 13
-                        min_y += 13
+                            maps[i][1] += 30
+                        max_y += 30
+                        min_y += 30
                         screen.render()
                         pygame.display.flip()
                 if event.button == 5:
                     if max_y <= 550:
                         continue
-                    for k in range(4):
+                    for k in range(1):
                         for i, elem in enumerate(screen.maps):
                             if max_y <= 550:
                                 continue
-                            maps[i][1] -= 13
-                        max_y -= 13
-                        min_y -= 13
+                            maps[i][1] -= 30
+                        max_y -= 30
+                        min_y -= 30
                         screen.render()
                         pygame.display.flip()
         screen.render()
@@ -104,7 +105,15 @@ def select_character():
 
 
 def play_map(map):
-    pass
+    screen = Game(map)
+    game = True
+    while game:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                game = False
+        screen.render()
+        pygame.display.flip()
+        clock.tick(fps)
 
 
 if __name__ == '__main__':
