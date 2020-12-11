@@ -64,7 +64,7 @@ class SelectMenu:
         for i, elem in enumerate(self.maps):
             x, y, map = elem
             if 1020 >= y >= 20:
-                if 500 <= mouse[0] and y <= mouse[1] <= y + 80:
+                if 500 <= mouse[0] and y <= mouse[1] <= y + 80 and mouse[1] <= 720 - 96:
                     display.blit(self.song_rect_active, (x, y))
                     if click[0]:
                         self.maps[self.active_map][0] += 30
