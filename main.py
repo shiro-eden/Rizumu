@@ -95,6 +95,7 @@ def select_character():
                         screen.switch_chr(-1)
                     elif 820 < x < 920 and 310 < y < 410:
                         screen.switch_chr(1)
+
         screen.draw()
         pygame.display.flip()
         res = screen.get_result()
@@ -111,6 +112,8 @@ def play_map(map):
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 game = False
+            if event.type == pygame.KEYDOWN:
+                screen.handle_keys_notes()
         screen.render()
         pygame.display.flip()
         clock.tick(fps)

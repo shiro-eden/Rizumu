@@ -21,9 +21,9 @@ hit200 = pygame.image.load('skin/hit200.png')
 hit300 = pygame.image.load('skin/hit300.png')
 hit301 = pygame.image.load('skin/hit300g.png')
 
-v = 500  # px/second
+v = 1000  # px/second
 st_x = 400
-time_uprise = (720 - 116) / v * 1000
+time_uprise = ((720 - 116) / v * 1000) // 1
 
 
 class Note(pygame.sprite.Sprite):
@@ -39,7 +39,7 @@ class Note(pygame.sprite.Sprite):
 
     def update(self):
 
-        self.rect.y += v / fps
+        self.rect.y += math.ceil(v / fps)
 
 
 class Slider(pygame.sprite.Sprite):
@@ -49,18 +49,18 @@ class Slider(pygame.sprite.Sprite):
             note_image = note0s_image
         else:
             note_image = note1s_image
-        self.h = (finish - start) * v / 1000
+        self.h = math.ceil((finish - start) * v / 1000)
         self.image = pygame.Surface((43, self.h))
-        self.rect = self.image.get_rect()
-        self.rect.x = st_x + 30 + 45 * column
-        self.rect.y = - self.rect.height
-        for i in range(math.floor(self.h/14)):
+        self.rect = self.image.get_rect(x=st_x + 30 + 45 * column, y=-self.h)
+        for i in range(math.floor(self.h / 14)):
             self.image.blit(note_image, (0, i * 14))
         ost = int(self.h % 14)
         note_image_ost = pygame.transform.scale(note_image, (43, ost))
         self.image.blit(note_image_ost, (0, self.h // 14 * 14))
+
     def update(self):
-        self.rect.y += v / fps
+        print(self.rect.h, self.rect.y)
+        self.rect.y += math.ceil(v / fps)
 
 
 class Game:
@@ -96,6 +96,7 @@ class Game:
         self.map.background.set_alpha(100)
         display.fill((0, 0, 0))
         display.blit(self.map.background, (0, 0))
+
     def render(self):
         display.fill((0, 0, 0), (430, 0, 45 * 4, 720))
         display.blit(stage_image, (st_x, 0))
@@ -153,7 +154,6 @@ class Game:
             k = self.notes.pop()
             self.notes_active.append((Note(k[0]), k))
 
-        self.handle_keys_notes()
         for i, elem in enumerate(self.notes_near):
             sprite, note = elem
             display.blit(sprite.image, sprite.rect)
