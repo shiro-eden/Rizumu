@@ -29,6 +29,7 @@ time_uprise = ((720 - 116) / v * 1000) // 1
 class Note(pygame.sprite.Sprite):
     def __init__(self, column):
         super().__init__()
+        self.column = column
         if column == 0 or column == 3:
             self.image = note0_image
         else:
@@ -45,21 +46,23 @@ class Note(pygame.sprite.Sprite):
 class Slider(pygame.sprite.Sprite):
     def __init__(self, column, start, finish):
         super().__init__()
+        self.column = column
         if column == 0 or column == 3:
             note_image = note0s_image
         else:
             note_image = note1s_image
-        self.h = math.ceil((finish - start) * v / 1000)
+        self.h = (finish - start) * v / 1000 // 1 + 14// 2
+        print(start, finish)
         self.image = pygame.Surface((43, self.h))
-        self.rect = self.image.get_rect(x=st_x + 30 + 45 * column, y=-self.h)
-        for i in range(math.floor(self.h / 14)):
+        self.rect = self.image.get_rect(x=st_x + 30 + 45 * column, y=-self.h + 14 // 2)
+        for i in range(math.floor(self.h // 14)):
             self.image.blit(note_image, (0, i * 14))
         ost = int(self.h % 14)
-        note_image_ost = pygame.transform.scale(note_image, (43, ost))
-        self.image.blit(note_image_ost, (0, self.h // 14 * 14))
-
+        note_image = pygame.transform.scale(note_image, (43, ost))
+        print(self.h - ost, ost, self.h, self.image.get_height())
+        self.image.blit(note_image, (0, self.h - ost))
+        print(self.image.get_height())
     def update(self):
-        print(self.rect.h, self.rect.y)
         self.rect.y += math.ceil(v / fps)
 
 
@@ -127,22 +130,21 @@ class Game:
         while abs(self.sliders[-1][1] - time) <= 1000 / fps:
             k = self.sliders.pop()
             self.sliders_active.append((Slider(k[0], k[4], k[3]), k))
-
-        for i, elem in enumerate(self.sliders_failed):
-            sprite, slider = elem
+        for i in range(len(self.sliders_failed) -1, -1, -1):
+            sprite, slider = self.sliders_failed[i]
             display.blit(sprite.image, sprite.rect)
             sprite.update()
             if time >= slider[-2]:
                 self.sliders_failed.pop(i)
-        for i, elem in enumerate(self.sliders_near):
-            sprite, slider = elem
+        for i in range(len(self.sliders_near) -1, -1, -1):
+            sprite, slider = self.sliders_near[i]
             display.blit(sprite.image, sprite.rect)
             sprite.update()
             if slider[-1] - time <= -self.od_50:
                 self.marks.append([0, 0])
                 self.sliders_failed.append(self.sliders_near.pop(i))
-        for i, elem in enumerate(self.sliders_active):
-            sprite, slider = elem
+        for i in range(len(self.sliders_active)-1, -1, -1):
+            sprite, slider = self.sliders_active[i]
             display.blit(sprite.image, sprite.rect)
             sprite.update()
             if slider[-1] - time <= self.od_50:
@@ -154,16 +156,16 @@ class Game:
             k = self.notes.pop()
             self.notes_active.append((Note(k[0]), k))
 
-        for i, elem in enumerate(self.notes_near):
-            sprite, note = elem
+        for i in range(len(self.notes_near) - 1, -1, -1):
+            sprite, note = self.notes_near[i]
             display.blit(sprite.image, sprite.rect)
             sprite.update()
             if note[-1] - time <= -self.od_50:
                 self.marks.append([0, 0])
                 self.notes_near.pop(i)
 
-        for i, elem in enumerate(self.notes_active):
-            sprite, note = elem
+        for i in range(len(self.notes_active) -1, -1, -1):
+            sprite, note = self.notes_active[i]
             display.blit(sprite.image, sprite.rect)
             sprite.update()
             if note[-1] - time <= self.od_50:
@@ -174,11 +176,12 @@ class Game:
         time = (pygame.time.get_ticks() - self.time)
         if keys[pygame.K_d]:
             note_index = -1
+            c = 1e10
             for i in range(len(self.notes_near)):
                 sprite, c_note = self.notes_near[i]
-                if c_note[0] == 0:
+                if c_note[0] == 0 and c_note[-1] <= c:
                     note_index = i
-                    break
+                    c = c_note[-1]
             if note_index != -1:
                 sprite, note = self.notes_near[note_index]
                 self.notes_near.pop(note_index)
@@ -197,11 +200,12 @@ class Game:
 
         if keys[pygame.K_f]:
             note_index = -1
+            c = 1e10
             for i in range(len(self.notes_near)):
                 sprite, c_note = self.notes_near[i]
-                if c_note[0] == 1:
+                if c_note[0] == 1 and c_note[-1] <= c:
                     note_index = i
-                    break
+                    c = c_note[-1]
             if note_index != -1:
                 sprite, note = self.notes_near[note_index]
                 self.notes_near.pop(note_index)
@@ -219,11 +223,12 @@ class Game:
 
         if keys[pygame.K_j]:
             note_index = -1
+            c = 1e10
             for i in range(len(self.notes_near)):
                 sprite, c_note = self.notes_near[i]
-                if c_note[0] == 2:
+                if c_note[0] == 2 and c_note[-1] <= c:
                     note_index = i
-                    break
+                    c = c_note[-1]
             if note_index != -1:
                 sprite, note = self.notes_near[note_index]
                 self.notes_near.pop(note_index)
@@ -241,11 +246,12 @@ class Game:
 
         if keys[pygame.K_k]:
             note_index = -1
+            c = 1e10
             for i in range(len(self.notes_near)):
                 sprite, c_note = self.notes_near[i]
-                if c_note[0] == 3:
+                if c_note[0] == 3 and c_note[-1] <= c:
                     note_index = i
-                    break
+                    c = c_note[-1]
             if note_index != -1:
                 sprite, note = self.notes_near[note_index]
                 self.notes_near.pop(note_index)
