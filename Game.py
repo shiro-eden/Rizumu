@@ -51,17 +51,15 @@ class Slider(pygame.sprite.Sprite):
             note_image = note0s_image
         else:
             note_image = note1s_image
-        self.h = (finish - start) * v / 1000 // 1 + 14// 2
-        print(start, finish)
+        self.h = (finish - start) * v / 1000 // 1 + 14 // 2
         self.image = pygame.Surface((43, self.h))
         self.rect = self.image.get_rect(x=st_x + 30 + 45 * column, y=-self.h + 14 // 2)
         for i in range(math.floor(self.h // 14)):
             self.image.blit(note_image, (0, i * 14))
         ost = int(self.h % 14)
         note_image = pygame.transform.scale(note_image, (43, ost))
-        print(self.h - ost, ost, self.h, self.image.get_height())
         self.image.blit(note_image, (0, self.h - ost))
-        print(self.image.get_height())
+
     def update(self):
         self.rect.y += math.ceil(v / fps)
 
@@ -89,7 +87,8 @@ class Game:
 
         self.sliders_active = []
         self.sliders_near = []
-        self.sliders_pressed = []
+        self.sliders_pressed = [-1, -1, -1, -1]
+        self.sliders_pressed_ms = [-1, -1, -1, -1]
         self.sliders_failed = []
         self.sliders = [i for i in self.map.objects if i[2] == 128]
         for i in range(len(self.sliders)):
@@ -103,8 +102,14 @@ class Game:
     def render(self):
         display.fill((0, 0, 0), (430, 0, 45 * 4, 720))
         display.blit(stage_image, (st_x, 0))
-        self.update_sliders()
-        self.update_notes()
+        if self.notes or self.notes_near or self.notes_active:
+            self.update_notes()
+        if self.sliders or self.sliders_pressed[0] != -1 or self.sliders_pressed[1] != -1 or self.sliders_pressed[
+            2] != -1 or self.sliders_pressed[
+            3] != -1 or self.sliders_near or self.sliders_active or self.sliders_failed:
+            self.update_sliders()
+
+        self.handle_keys_sliders()
         display.fill((0, 0, 0), (st_x + 30, 700, 45 * 4, 20))
         self.show_marks()
         keys = pygame.key.get_pressed()
@@ -127,23 +132,32 @@ class Game:
 
     def update_sliders(self):
         time = (pygame.time.get_ticks() - self.time)
-        while abs(self.sliders[-1][1] - time) <= 1000 / fps:
-            k = self.sliders.pop()
-            self.sliders_active.append((Slider(k[0], k[4], k[3]), k))
-        for i in range(len(self.sliders_failed) -1, -1, -1):
+        if self.sliders:
+            while abs(self.sliders[-1][1] - time) <= 1000 / fps:
+                k = self.sliders.pop()
+                self.sliders_active.append((Slider(k[0], k[4], k[3]), k))
+                if not self.sliders:
+                    break
+        for i in range(len(self.sliders_failed) - 1, -1, -1):
             sprite, slider = self.sliders_failed[i]
             display.blit(sprite.image, sprite.rect)
             sprite.update()
             if time >= slider[-2]:
                 self.sliders_failed.pop(i)
-        for i in range(len(self.sliders_near) -1, -1, -1):
+
+        for i in range(len(self.sliders_pressed)):
+            if self.sliders_pressed[i] != -1:
+                sprite, slider = self.sliders_pressed[i]
+                display.blit(sprite.image, sprite.rect)
+                sprite.update()
+        for i in range(len(self.sliders_near) - 1, -1, -1):
             sprite, slider = self.sliders_near[i]
             display.blit(sprite.image, sprite.rect)
             sprite.update()
             if slider[-1] - time <= -self.od_50:
                 self.marks.append([0, 0])
                 self.sliders_failed.append(self.sliders_near.pop(i))
-        for i in range(len(self.sliders_active)-1, -1, -1):
+        for i in range(len(self.sliders_active) - 1, -1, -1):
             sprite, slider = self.sliders_active[i]
             display.blit(sprite.image, sprite.rect)
             sprite.update()
@@ -152,9 +166,12 @@ class Game:
 
     def update_notes(self):
         time = (pygame.time.get_ticks() - self.time)
-        while abs(self.notes[-1][1] - time) <= 1000 / fps:
-            k = self.notes.pop()
-            self.notes_active.append((Note(k[0]), k))
+        if self.notes:
+            while abs(self.notes[-1][1] - time) <= 1000 / fps:
+                k = self.notes.pop()
+                self.notes_active.append((Note(k[0]), k))
+                if not self.notes:
+                    break
 
         for i in range(len(self.notes_near) - 1, -1, -1):
             sprite, note = self.notes_near[i]
@@ -164,12 +181,201 @@ class Game:
                 self.marks.append([0, 0])
                 self.notes_near.pop(i)
 
-        for i in range(len(self.notes_active) -1, -1, -1):
+        for i in range(len(self.notes_active) - 1, -1, -1):
             sprite, note = self.notes_active[i]
             display.blit(sprite.image, sprite.rect)
             sprite.update()
             if note[-1] - time <= self.od_50:
                 self.notes_near.append(self.notes_active.pop(i))
+
+    def handle_keys_sliders(self):
+        time = (pygame.time.get_ticks() - self.time)
+        keys = pygame.key.get_pressed()
+        if keys[pygame.K_d]:
+            key = 0
+            if self.sliders_pressed[key] == -1:
+                slider_index = -1
+                c = 1e10
+                for i in range(len(self.sliders_near)):
+                    sprite, c_slider = self.sliders_near[i]
+                    if c_slider[0] == key and c_slider[-1] <= c:
+                        slider_index = i
+                        c = c_slider[-1]
+                if slider_index != -1:
+                    sprite, slider = self.sliders_near[slider_index]
+                    ms = abs(time - slider[-1])
+                    self.sliders_pressed_ms[key] = ms
+                    self.sliders_pressed[key] = (self.sliders_near[slider_index])
+                    self.sliders_near.pop(slider_index)
+            else:
+                sprite, slider = self.sliders_pressed[key]
+                if time > slider[-2] + self.od_50:
+                    self.sliders_pressed[key] = -1
+                    self.marks.append(0)
+        else:
+            key = 0
+            if self.sliders_pressed[key] != -1:
+                sprite, slider = self.sliders_pressed[key]
+                ms = abs(time - slider[-2])
+                ms1 = self.sliders_pressed_ms[key]
+                ms = (ms + ms1) // 2
+                if ms > self.od_50:
+                    self.marks.append([0, 0])
+                    self.sliders_failed.append((sprite, slider))
+                elif ms > self.od_100:
+                    self.marks.append([50, 0])
+                elif ms > self.od_200:
+                    self.marks.append([100, 0])
+                elif ms > self.od_300:
+                    self.marks.append([200, 0])
+                elif ms > self.od_max:
+                    self.marks.append([300, 0])
+                elif ms <= self.od_max:
+                    self.marks.append([301, 0])
+
+                self.sliders_pressed[key] = -1
+                self.sliders_pressed_ms[key] = -1
+
+        if keys[pygame.K_f]:
+            key = 1
+            if self.sliders_pressed[key] == -1:
+                slider_index = -1
+                c = 1e10
+                for i in range(len(self.sliders_near)):
+                    sprite, c_slider = self.sliders_near[i]
+                    if c_slider[0] == key and c_slider[-1] <= c:
+                        slider_index = i
+                        c = c_slider[-1]
+                if slider_index != -1:
+                    sprite, slider = self.sliders_near[slider_index]
+                    ms = abs(time - slider[-1])
+                    self.sliders_pressed_ms[key] = ms
+                    self.sliders_pressed[key] = (self.sliders_near[slider_index])
+                    self.sliders_near.pop(slider_index)
+            else:
+                sprite, slider = self.sliders_pressed[key]
+                if time > slider[-2] + self.od_50:
+                    self.sliders_pressed[key] = -1
+                    self.marks.append(0)
+        else:
+            key = 1
+            if self.sliders_pressed[key] != -1:
+                sprite, slider = self.sliders_pressed[key]
+                ms = abs(time - slider[-2])
+                ms1 = self.sliders_pressed_ms[key]
+                ms = (ms + ms1) // 2
+                if ms > self.od_50:
+                    self.marks.append([0, 0])
+                    self.sliders_failed.append((sprite, slider))
+                elif ms > self.od_100:
+                    self.marks.append([50, 0])
+                elif ms > self.od_200:
+                    self.marks.append([100, 0])
+                elif ms > self.od_300:
+                    self.marks.append([200, 0])
+                elif ms > self.od_max:
+                    self.marks.append([300, 0])
+                elif ms <= self.od_max:
+                    self.marks.append([301, 0])
+                else:
+                    self.marks.append([0, 0])
+                    self.sliders_failed.append((sprite, slider))
+                self.sliders_pressed[key] = -1
+                self.sliders_pressed_ms[key] = -1
+
+        if keys[pygame.K_j]:
+            key = 2
+            if self.sliders_pressed[key] == -1:
+                slider_index = -1
+                c = 1e10
+                for i in range(len(self.sliders_near)):
+                    sprite, c_slider = self.sliders_near[i]
+                    if c_slider[0] == key and c_slider[-1] <= c:
+                        slider_index = i
+                        c = c_slider[-1]
+                if slider_index != -1:
+                    sprite, slider = self.sliders_near[slider_index]
+                    ms = abs(time - slider[-1])
+                    self.sliders_pressed_ms[key] = ms
+                    self.sliders_pressed[key] = (self.sliders_near[slider_index])
+                    self.sliders_near.pop(slider_index)
+            else:
+                sprite, slider = self.sliders_pressed[key]
+                if time > slider[-2] + self.od_50:
+                    self.sliders_pressed[key] = -1
+                    self.marks.append(0)
+        else:
+            key = 2
+            if self.sliders_pressed[key] != -1:
+                sprite, slider = self.sliders_pressed[key]
+                ms = abs(time - slider[-2])
+                ms1 = self.sliders_pressed_ms[key]
+                ms = (ms + ms1) // 2
+                if ms > self.od_50:
+                    self.marks.append([0, 0])
+                    self.sliders_failed.append((sprite, slider))
+                elif ms > self.od_100:
+                    self.marks.append([50, 0])
+                elif ms > self.od_200:
+                    self.marks.append([100, 0])
+                elif ms > self.od_300:
+                    self.marks.append([200, 0])
+                elif ms > self.od_max:
+                    self.marks.append([300, 0])
+                elif ms <= self.od_max:
+                    self.marks.append([301, 0])
+                else:
+                    self.marks.append([0, 0])
+                    self.sliders_failed.append((sprite, slider))
+                self.sliders_pressed[key] = -1
+                self.sliders_pressed_ms[key] = -1
+
+        if keys[pygame.K_k]:
+            key = 3
+            if self.sliders_pressed[key] == -1:
+                slider_index = -1
+                c = 1e10
+                for i in range(len(self.sliders_near)):
+                    sprite, c_slider = self.sliders_near[i]
+                    if c_slider[0] == key and c_slider[-1] <= c:
+                        slider_index = i
+                        c = c_slider[-1]
+                if slider_index != -1:
+                    sprite, slider = self.sliders_near[slider_index]
+                    ms = abs(time - slider[-1])
+                    self.sliders_pressed_ms[key] = ms
+                    self.sliders_pressed[key] = (self.sliders_near[slider_index])
+                    self.sliders_near.pop(slider_index)
+            else:
+                sprite, slider = self.sliders_pressed[key]
+                if time > slider[-2] + self.od_50:
+                    self.sliders_pressed[key] = -1
+                    self.marks.append(0)
+        else:
+            key = 3
+            if self.sliders_pressed[key] != -1:
+                sprite, slider = self.sliders_pressed[key]
+                ms = abs(time - slider[-2])
+                ms1 = self.sliders_pressed_ms[key]
+                ms = (ms + ms1) // 2
+                if ms > self.od_50:
+                    self.marks.append([0, 0])
+                    self.sliders_failed.append((sprite, slider))
+                elif ms > self.od_100:
+                    self.marks.append([50, 0])
+                elif ms > self.od_200:
+                    self.marks.append([100, 0])
+                elif ms > self.od_300:
+                    self.marks.append([200, 0])
+                elif ms > self.od_max:
+                    self.marks.append([300, 0])
+                elif ms <= self.od_max:
+                    self.marks.append([301, 0])
+                else:
+                    self.marks.append([0, 0])
+                    self.sliders_failed.append((sprite, slider))
+                self.sliders_pressed[key] = -1
+                self.sliders_pressed_ms[key] = -1
 
     def handle_keys_notes(self):
         keys = pygame.key.get_pressed()
