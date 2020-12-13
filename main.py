@@ -8,6 +8,10 @@ from CharacterMenu import CharacterMenu
 
 
 def start_menu():
+    pygame.mixer.music.load('menu_music.wav')
+    pygame.mixer.music.set_volume(0.3)
+    pygame.mixer.music.play(-1)
+
     screen = StartMenu()
     game = True
     res = -1
@@ -15,6 +19,11 @@ def start_menu():
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 game = False
+            if event.type == pygame.KEYDOWN:
+                keys = pygame.key.get_pressed()
+                if keys[pygame.K_SPACE] or keys[pygame.K_RETURN]:
+                    screen.result = 1
+                    pygame.mixer.music.stop()
 
         screen.draw()
         pygame.display.flip()
@@ -23,6 +32,7 @@ def start_menu():
         res = screen.get_result()
         if res != -1:
             game = False
+            clock.tick(30)
     if res == 1:
         select_map()
 
@@ -42,30 +52,24 @@ def select_map():
                 if event.button == 4:
                     if min_y >= 100:
                         continue
-                    for k in range(1):
-
-                        for i, elem in enumerate(screen.maps):
-                            if min_y >= 100:
-                                continue
-                            maps[i][1] += 30
-                        max_y += 30
-                        min_y += 30
-                        screen.render()
-                        pygame.display.flip()
+                    for i, elem in enumerate(screen.maps):
+                        if min_y >= 100:
+                            continue
+                        maps[i][1] += 30
+                    max_y += 30
+                    min_y += 30
                 if event.button == 5:
                     if max_y <= 550:
                         continue
-                    for k in range(1):
-                        for i, elem in enumerate(screen.maps):
-                            if max_y <= 550:
-                                continue
-                            maps[i][1] -= 30
-                        max_y -= 30
-                        min_y -= 30
-                        screen.render()
-                        pygame.display.flip()
+                    for i, elem in enumerate(screen.maps):
+                        if max_y <= 550:
+                            continue
+                        maps[i][1] -= 30
+                    max_y -= 30
+                    min_y -= 30
         screen.render()
         pygame.display.flip()
+        clock.tick(30)
 
         res = screen.get_result()
         if res != -1:
