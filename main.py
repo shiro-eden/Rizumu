@@ -2,14 +2,15 @@ import pygame
 from Map import Map, import_maps
 from GameParameter import clock, fps
 from StartMenu import StartMenu
-from Game import Game
+from Game import Game, stage_image, key0_image, key1_image
 from SelectMenu import SelectMenu
 from CharacterMenu import CharacterMenu
+from PauseMenu import PauseMenu
 
 
 def start_menu():
     pygame.mixer.music.load('menu_music.wav')
-    pygame.mixer.music.set_volume(0.3)
+    pygame.mixer.music.set_volume(0.01)
     pygame.mixer.music.play(-1)
 
     screen = StartMenu()
@@ -112,15 +113,65 @@ def select_character():
 def play_map(map):
     screen = Game(map)
     game = True
+    result = -1
     while game:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 game = False
             if event.type == pygame.KEYDOWN:
-                screen.handle_keys_notes()
+                if event.key == pygame.K_ESCAPE:
+                    objects = [(stage_image, key0_image, key1_image),
+                               (screen.notes_active, screen.notes_near),
+                               (screen.sliders_active, screen.sliders_near, screen.sliders_pressed,
+                                screen.sliders_failed, screen.sliders_pressed_ms)]
+                    screen.pause_music()
+                    result = pause(objects, screen.map.background)
+                    if result == -2 or result == 2:
+                        return select_map()
+                    elif result == 0:
+                        screen.time = pygame.time.get_ticks() - screen.time_now
+                        screen.unpause_music()
+                    elif result == 1:
+                        screen = Game(map)
+                        continue
+                else:
+                    screen.handle_keys_notes()
         screen.render()
         pygame.display.flip()
         clock.tick(fps)
+
+
+def pause(objects, background):
+    screen = PauseMenu(objects, background)
+    game = True
+    timer = False
+    timer_image = [pygame.image.load(f'image/timer_{i}.png') for i in range(1, 4)]
+    while game:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                res = -2
+                break
+        if timer:
+            screen.render_map()
+
+            time_after_pause = (pygame.time.get_ticks() - time_in_pause) / 1000
+            if time_after_pause < 3:
+                display.blit(timer_image[int(time_after_pause)], (600, 295))
+            else:
+                game = False
+                timer = False
+        else:
+            screen.render_pause()
+        pygame.display.flip()
+        clock.tick(fps)
+        res = screen.get_result()
+        if res == 0:
+            if not timer:
+                timer = True
+                time_in_pause = pygame.time.get_ticks()
+        elif res != -1:
+            game = False
+    return res
 
 
 if __name__ == '__main__':

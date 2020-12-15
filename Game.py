@@ -68,6 +68,10 @@ class Game:
     def __init__(self, map):
         self.map = map[2]
 
+        pygame.mixer.music.load(f'Songs/{self.map.dir}/{self.map.general["AudioFilename"]}')
+        pygame.mixer.music.set_volume(0.2)
+        pygame.mixer.music.play(-1)
+
         od = float(self.map.OD)
         self.od_max = 16.5
         self.od_300 = (64 - (od * 3)) + 0.5
@@ -498,3 +502,9 @@ class Game:
             if self.marks[i][1] >= 250:
                 self.marks.pop(i)
             flag = True
+
+    def pause_music(self):
+        pygame.mixer.music.pause()
+
+    def unpause_music(self):
+        pygame.mixer.music.unpause()

@@ -4,6 +4,23 @@ from Button import Button
 from GameEffects import drawing_text
 
 
+character_list = ((pygame.image.load('image/flandre.png'), (450, 182)),
+                  (pygame.image.load('image/marisa.png'), (367, 182)),
+                  (pygame.image.load('image/reimu.png'), (405, 182)),
+                  (pygame.image.load('image/remilia.png'), (428, 182)),
+                  (pygame.image.load('image/sakuya.png'), (480, 182)))
+
+left_button_image = (pygame.image.load('image/left_button_0.png'),
+                     pygame.image.load('image/left_button_1.png'))
+right_button_image = (pygame.image.load('image/right_button_0.png'),
+                     pygame.image.load('image/right_button_1.png'))
+confirm_button_image = (pygame.image.load('image/confirm_button_0.png'),
+                        pygame.image.load('image/confirm_button_1.png'))
+exit_button_image = [pygame.image.load(f'image/menu_back_{i}.png') for i in range(7)]
+
+
+
+
 class CharacterMenu:
     def __init__(self):
         self.result = -1
@@ -12,37 +29,17 @@ class CharacterMenu:
         self.names_chr = (('Flandre', (415, 110)), ('Marisa', (420, 110)), ('Reimu', (440, 110)),
                           ('Remilia', (425, 110)), ('Sakuya', (430, 110)))
 
-        self.list_chr = [(pygame.image.load('image/flandre.png'), (450, 182)),
-                         (pygame.image.load('image/marisa.png'), (367, 182)),
-                         (pygame.image.load('image/reimu.png'), (405, 182)),
-                         (pygame.image.load('image/remilia.png'), (428, 182)),
-                         (pygame.image.load('image/sakuya.png'), (480, 182))]
-
-        image = ((pygame.image.load('image/left_button_0.png'), 0, -1),
-                 (pygame.image.load('image/left_button_1.png'), 0, -1),
-                 pygame.image.load('image/left_button_shadow.png'))
-        self.left_button = Button(200, 310, 100, 100, '', image)
-
-        image = ((pygame.image.load('image/right_button_0.png'), 0, -1),
-                 (pygame.image.load('image/right_button_1.png'), 0, -1),
-                 pygame.image.load('image/right_button_shadow.png'))
-        self.right_button = Button(820, 310, 100, 100, '', image)
-
-        image = [(pygame.image.load(f'image/menu_back_{i}.png'), 0, 0) for i in range(7)]
-        image.append(pygame.image.load('image/menu_back_shadow.png'))
-        self.exit_btn = Button(0, 640, 236, 92, '', image, self.back)
-
-        image = [(pygame.image.load('image/confirm_button_0.png'), 0, 0),
-                 (pygame.image.load('image/confirm_button_1.png'), 0, 0),
-                 pygame.image.load('image/confirm_button_shadow.png')]
-        self.confirm_btn = Button(1037, 640, 86, 86, '', image, self.confirm_chr)
+        self.left_button = Button(200, 310, 100, 100, '', left_button_image)
+        self.right_button = Button(820, 310, 100, 100, '', right_button_image)
+        self.exit_btn = Button(0, 640, 236, 92, '', exit_button_image, self.back)
+        self.confirm_btn = Button(1037, 640, 86, 86, '', confirm_button_image, self.confirm_chr)
 
     def draw(self):
         display.blit(pygame.image.load('image/menu_background.png'), (0, 0))
         display.blit(pygame.image.load('image/menu_back+.png'), (224, 640))
         display.blit(pygame.image.load('image/menu+.png'), (0, -4))
 
-        chr, cords = self.list_chr[self.ind_chr]
+        chr, cords = character_list[self.ind_chr]
         if self.ind_chr == character:
             pygame.draw.circle(display, (212, 84, 182), (565, 385), 220)
         display.blit(chr, cords)

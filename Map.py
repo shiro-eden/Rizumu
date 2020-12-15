@@ -71,6 +71,7 @@ class Map():
             current = [i.lstrip() for i in current]
             self.objects.append(current)
             cur_line += 1
+        sadsad = 0
         for i, elem in enumerate(self.objects):
             x, y, time, type, *another = elem
             if int(type) == 128:
