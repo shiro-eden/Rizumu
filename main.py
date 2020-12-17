@@ -10,7 +10,7 @@ from PauseMenu import PauseMenu
 
 def start_menu():
     pygame.mixer.music.load('menu_music.wav')
-    pygame.mixer.music.set_volume(0.01)
+    pygame.mixer.music.set_volume(0.1)
     pygame.mixer.music.play(-1)
 
     screen = StartMenu()
@@ -126,14 +126,16 @@ def play_map(map):
                                 screen.sliders_failed, screen.sliders_pressed_ms)]
                     screen.pause_music()
                     result = pause(objects, screen.map.background)
-                    if result == -2 or result == 2:
-                        return select_map()
+                    if result == -2:
+                        return
                     elif result == 0:
                         screen.time = pygame.time.get_ticks() - screen.time_now
                         screen.unpause_music()
                     elif result == 1:
                         screen = Game(map)
                         continue
+                    elif result == 2:
+                        return select_map()
                 else:
                     screen.handle_keys_notes()
         screen.render()
@@ -149,14 +151,13 @@ def pause(objects, background):
     while game:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                res = -2
-                break
+                return -2
         if timer:
             screen.render_map()
 
             time_after_pause = (pygame.time.get_ticks() - time_in_pause) / 1000
             if time_after_pause < 3:
-                display.blit(timer_image[int(time_after_pause)], (600, 295))
+                display.blit(timer_image[-1 * (int(time_after_pause) + 1)], (600, 295))
             else:
                 game = False
                 timer = False
