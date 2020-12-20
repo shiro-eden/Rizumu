@@ -71,7 +71,6 @@ class Map():
             current = [i.lstrip() for i in current]
             self.objects.append(current)
             cur_line += 1
-        sadsad = 0
         for i, elem in enumerate(self.objects):
             x, y, time, type, *another = elem
             if int(type) == 128:
@@ -89,6 +88,7 @@ class Map():
                 self.background_file = background_file.rstrip('"').lstrip('"')
                 self.background = pygame.transform.smoothscale(pygame.image.load(f'Songs/{self.dir}/{self.background_file}'), (1120, 720))
                 self.small_background = pygame.transform.smoothscale(self.background, (120, 80))
+
 
 def import_maps():  # Создает объекты класса Map, помещает их в maps
     songs = os.listdir(path="Songs")

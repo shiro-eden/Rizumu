@@ -67,9 +67,12 @@ class PauseMenu:
                     display.blit(sprite.image, sprite.rect)
 
         for slider in self.map_objects[1]:
-            if len(slider) == 1:
-                sprite = slider[0][0]
-                display.blit(sprite.image, sprite.rect)
+            for obj in slider:
+                try:
+                    sprite = obj[0]
+                    display.blit(sprite.image, sprite.rect)
+                except (AttributeError, TypeError):
+                    pass
 
         key0d_image, key1d_image = self.map_keys[1:]
         display.blit(key0d_image, (st_x + 30, 617))

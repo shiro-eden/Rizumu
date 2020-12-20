@@ -34,7 +34,7 @@ class CharacterMenu:
         self.exit_btn = Button(0, 640, 236, 92, '', exit_button_image, self.back)
         self.confirm_btn = Button(1037, 640, 86, 86, '', confirm_button_image, self.confirm_chr)
 
-    def draw(self):
+    def render(self):
         display.blit(pygame.image.load('image/menu_background.png'), (0, 0))
         display.blit(pygame.image.load('image/menu_back+.png'), (224, 640))
         display.blit(pygame.image.load('image/menu+.png'), (0, -4))

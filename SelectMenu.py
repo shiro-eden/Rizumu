@@ -34,6 +34,11 @@ class SelectMenu:
         self.maps[0][0] -= 30
         self.menu_background = self.maps[self.active_map][2].background
 
+        map = f'Songs/{self.maps[0][2].dir}/{self.maps[0][2].general["AudioFilename"]}'
+        pygame.mixer.music.load(map)
+        pygame.mixer.music.set_volume(0.1)
+        pygame.mixer.music.play(-1)
+
     def back(self):
         self.result = 1
 
@@ -68,8 +73,13 @@ class SelectMenu:
                     if click[0]:
                         self.maps[self.active_map][0] += 30
                         self.active_map = i
-                        self.menu_background = self.maps[self.active_map][2].background
+                        map = self.maps[self.active_map][2]
+                        self.menu_background = map.background
                         self.maps[i][0] -= 30
+
+                        pygame.mixer.music.load(f'Songs/{map.dir}/{map.general["AudioFilename"]}')
+                        pygame.mixer.music.set_volume(0.2)
+                        pygame.mixer.music.play(-1)
                 else:
                     display.blit(song_rect, (x, y))
                 song_background = map.small_background

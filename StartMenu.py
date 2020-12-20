@@ -22,7 +22,7 @@ class StartMenu:
 
         self.ind = 0
 
-    def draw(self):
+    def render(self):
         display.blit(background_image, (0, 0))
 
         self.ind += 2

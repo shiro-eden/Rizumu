@@ -1,11 +1,16 @@
 import pygame
-from Map import Map, import_maps
+
+from copy import deepcopy
+
+from Map import import_maps
 from GameParameter import clock, fps
-from StartMenu import StartMenu
-from Game import Game, stage_image, key0_image, key1_image
+
+from StartMenu import StartMenu  # импорты экранов
 from SelectMenu import SelectMenu
 from CharacterMenu import CharacterMenu
+from Game import Game, stage_image, key0_image, key1_image
 from PauseMenu import PauseMenu
+from ResultScreen import ResultScreen
 
 
 def start_menu():
@@ -26,7 +31,7 @@ def start_menu():
                     screen.result = 1
                     pygame.mixer.music.stop()
 
-        screen.draw()
+        screen.render()
         pygame.display.flip()
 
         clock.tick(30)
@@ -89,6 +94,9 @@ def select_character():
 
     game = True
     res = -1
+    pygame.mixer.music.load('menu_music.wav')
+    pygame.mixer.music.set_volume(0.1)
+    pygame.mixer.music.play(-1)
     while game:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -101,7 +109,7 @@ def select_character():
                     elif 820 < x < 920 and 310 < y < 410:
                         screen.switch_chr(1)
 
-        screen.draw()
+        screen.render()
         pygame.display.flip()
         res = screen.get_result()
         if res != -1:
@@ -113,7 +121,6 @@ def select_character():
 def play_map(map):
     screen = Game(map)
     game = True
-    result = -1
     while game:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -132,15 +139,18 @@ def play_map(map):
                         screen.time = pygame.time.get_ticks() - screen.time_now
                         screen.unpause_music()
                     elif result == 1:
-                        screen = Game(map)
-                        continue
+                        return play_map(map)
                     elif result == 2:
                         return select_map()
                 else:
                     screen.handle_keys_notes()
         screen.render()
+        if screen.end_game():
+            game = False
         pygame.display.flip()
         clock.tick(fps)
+    result_game(screen.max_combo, screen.score, screen.count_marks, screen.accuracy)
+
 
 
 def pause(objects, background):
@@ -152,9 +162,11 @@ def pause(objects, background):
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 return -2
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_ESCAPE:
+                    return pause(objects, background)
         if timer:
             screen.render_map()
-
             time_after_pause = (pygame.time.get_ticks() - time_in_pause) / 1000
             if time_after_pause < 3:
                 display.blit(timer_image[-1 * (int(time_after_pause) + 1)], (600, 295))
@@ -173,6 +185,22 @@ def pause(objects, background):
         elif res != -1:
             game = False
     return res
+
+
+def result_game(count_combo, score, marks, accuracy):
+    screen = ResultScreen(count_combo, score, marks, accuracy)
+    game = True
+    while game:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                game = False
+        screen.render()
+        pygame.display.flip()
+        clock.tick(fps)
+        res = screen.get_result()
+        if res == 0:
+            game = False
+            select_map()
 
 
 if __name__ == '__main__':
