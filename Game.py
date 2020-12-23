@@ -90,8 +90,11 @@ class Game:
         for i in range(len(self.notes)):
             self.notes[i].append(self.notes[i][1])
             self.notes[i][1] -= time_uprise
-        self.notes.sort(key=lambda x: x[1], reverse=True)
 
+        self.notes.sort(key=lambda x: x[1], reverse=True)
+        while self.notes[-1][1] <= 0:
+            self.notes.pop()
+        print(self.notes)
         self.sliders_active = []
         self.sliders_near = []
         self.sliders_pressed = [-1, -1, -1, -1]
@@ -101,9 +104,11 @@ class Game:
         for i in range(len(self.sliders)):
             self.sliders[i].append(self.sliders[i][1])
             self.sliders[i][1] -= time_uprise
+
         self.sliders.sort(key=lambda x: x[1], reverse=True)
         self.map.background.set_alpha(100)
-
+        while self.sliders[-1][1] < 0:
+            self.sliders.pop()
         self.end_time = max((self.notes[0][4], self.sliders[0][3])) + 1500
         display.fill((0, 0, 0))
         display.blit(self.map.background, (0, 0))
@@ -111,7 +116,6 @@ class Game:
         pygame.mixer.music.load(f'Songs/{self.map.dir}/{self.map.general["AudioFilename"]}')
         pygame.mixer.music.set_volume(0.2)
         pygame.mixer.music.play(1)
-
     def render(self):
         self.time_now = (pygame.time.get_ticks() - self.time)
         display.fill((0, 0, 0), (430, 0, 45 * 4, 720))

@@ -7,7 +7,7 @@ maps = []
 
 class Map():
     def __init__(self, foldername, filename):
-        file = open(f'Songs\\{foldername}\\{filename}').read().split('\n')
+        file = open(f'Songs\\{foldername}\\{filename}', encoding="utf-8").read().split('\n')
         self.dir = foldername
         general_line = file.index('[General]')
         self.general = {}

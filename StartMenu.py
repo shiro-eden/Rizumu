@@ -18,7 +18,7 @@ class StartMenu:
     def __init__(self):
         self.result = -1
 
-        self.exit_btn = Button(405, 655, 330, 69, '', exit_button_image, self.exit)
+        self.exit_btn = Button(405, 600, 330, 69, '', exit_button_image, self.exit)
 
         self.ind = 0
 
@@ -31,7 +31,7 @@ class StartMenu:
         display.blit(equalizer_image[self.ind // 3], (0, 0))
 
         drawing_text('Press SPACE or ENTER to continue', (280, 540), pygame.Color('white'),
-                     font_size=34, font_type='rizumu.ttf')
+                     font_size=34, font_type='corp_round_v1.ttf')
 
         display.blit(rizumu_image, (0, 0))
 

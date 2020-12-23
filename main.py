@@ -15,7 +15,7 @@ from ResultScreen import ResultScreen
 
 def start_menu():
     pygame.mixer.music.load('menu_music.wav')
-    pygame.mixer.music.set_volume(0.1)
+    pygame.mixer.music.set_volume(0.01)
     pygame.mixer.music.play(-1)
 
     screen = StartMenu()
