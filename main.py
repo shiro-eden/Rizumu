@@ -22,9 +22,13 @@ def start_menu():
     game = True
     res = -1
     while not transition.get_transition():
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                return
         transition.render()
         pygame.display.flip()
         clock.tick(30)
+    screen.render()
     while game:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -35,9 +39,13 @@ def start_menu():
                     screen.result = 1
                     pygame.mixer.music.stop()
 
-        screen.render()
         if transition.get_transition():
+            if not transition.background:
+                pygame.image.save(display, 'image/background_for_load.png')
+                transition.background = pygame.image.load('image/background_for_load.png')
             transition.render()
+        else:
+            screen.render()
         pygame.display.flip()
 
         clock.tick(30)
@@ -48,6 +56,7 @@ def start_menu():
         frame = transition.get_frame()
         if frame != 35 and frame != -1:
             transition.reverse()
+        transition.background = None
         select_map()
 
 
@@ -59,9 +68,13 @@ def select_map():
     game = True
     res = -1
     while not transition.get_transition():
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                return
         transition.render()
         pygame.display.flip()
         clock.tick(30)
+    screen.render()
     while game:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -85,9 +98,13 @@ def select_map():
                         maps[i][1] -= 30
                     max_y -= 30
                     min_y -= 30
-        screen.render()
         if transition.get_transition():
+            if not transition.background:
+                pygame.image.save(display, 'image/background_for_load.png')
+                transition.background = pygame.image.load('image/background_for_load.png')
             transition.render()
+        else:
+            screen.render()
         pygame.display.flip()
         clock.tick(30)
 
@@ -98,11 +115,13 @@ def select_map():
         frame = transition.get_frame()
         if frame != 35 and frame != -1:
             transition.reverse()
+        transition.background = None
         start_menu()
     elif res == 2:
         frame = transition.get_frame()
         if frame != 35 and frame != -1:
             transition.reverse()
+        transition.background = None
         select_character()
     elif res == 3:
         map = screen.get_map()
@@ -119,10 +138,14 @@ def select_character():
     pygame.mixer.music.play(-1)
 
     while not transition.get_transition():
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                return
         transition.render()
         pygame.display.flip()
         clock.tick(30)
 
+    screen.render()
     while game:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -135,9 +158,13 @@ def select_character():
                     elif 820 < x < 920 and 310 < y < 410:
                         screen.switch_chr(1)
 
-        screen.render()
         if transition.get_transition():
+            if not transition.background:
+                pygame.image.save(display, 'image/background_for_load.png')
+                transition.background = pygame.image.load('image/background_for_load.png')
             transition.render()
+        else:
+            screen.render()
         pygame.display.flip()
         res = screen.get_result()
         if res != -1:
@@ -146,6 +173,7 @@ def select_character():
         frame = transition.get_frame()
         if frame != 35 and frame != -1:
             transition.reverse()
+        transition.background = None
         select_map()
 
 
@@ -155,7 +183,7 @@ def play_map(map):
     while game:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                game = False
+                return
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
                     objects = [(stage_image, key0_image, key1_image),
@@ -180,6 +208,7 @@ def play_map(map):
             game = False
         pygame.display.flip()
         clock.tick(fps)
+    transition.background = None
     result_game(screen.max_combo, screen.score, screen.count_marks, screen.accuracy, map)
 
 
@@ -225,17 +254,25 @@ def result_game(count_combo, score, marks, accuracy, map):
     transition.frame = -1
     transition.transition_back = False
     while not transition.get_transition():
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                return
         transition.render()
         pygame.display.flip()
         clock.tick(30)
 
+    screen.render()
     while game:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 game = False
-        screen.render()
         if transition.get_transition():
+            if not transition.background:
+                pygame.image.save(display, 'image/background_for_load.png')
+                transition.background = pygame.image.load('image/background_for_load.png')
             transition.render()
+        else:
+            screen.render()
         pygame.display.flip()
         clock.tick(fps)
         res = screen.get_result()
@@ -244,6 +281,7 @@ def result_game(count_combo, score, marks, accuracy, map):
             frame = transition.get_frame()
             if frame != 35 and frame != -1:
                 transition.reverse()
+            transition.background = None
             select_map()
         if res == 1:
             game = False

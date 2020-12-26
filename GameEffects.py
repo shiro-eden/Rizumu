@@ -18,6 +18,7 @@ class AnimationTransition:
     def __init__(self):
         self.transition_back = False
         self.frame = -1
+        self.background = None
 
     def get_frame(self):
         return self.frame
@@ -29,6 +30,8 @@ class AnimationTransition:
         self.transition_back = not self.transition_back
 
     def render(self):  # анимация перехода между экранами
+        if self.background:
+            display.blit(self.background, (0, 0))
         if self.transition_back:
             self.frame -= 1
             img = pygame.transform.flip(AnimationTransition.transition_img[self.frame], True, False)

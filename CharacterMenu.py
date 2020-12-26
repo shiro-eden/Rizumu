@@ -19,8 +19,6 @@ confirm_button_image = (pygame.image.load('image/confirm_button_0.png'),
 exit_button_image = [pygame.image.load(f'image/menu_back_{i}.png') for i in range(7)]
 
 
-
-
 class CharacterMenu:
     def __init__(self):
         self.result = -1
@@ -44,8 +42,7 @@ class CharacterMenu:
             pygame.draw.circle(display, (212, 84, 182), (565, 385), 220)
         display.blit(chr, cords)
         text, cords = self.names_chr[self.ind_chr]
-        drawing_text(text, cords, font_color=pygame.Color('White'),
-                     font_size=70, font_type='rizumu.ttf')
+        drawing_text(text, cords, font_color=pygame.Color('White'), font_size=70)
 
         self.exit_btn.draw(0, 0)
         self.confirm_btn.draw(0, 0)
