@@ -4,6 +4,7 @@ from copy import deepcopy
 
 from Map import import_maps
 from GameParameter import clock, fps
+from GameEffects import AnimationTransition
 
 from StartMenu import StartMenu  # импорты экранов
 from SelectMenu import SelectMenu
@@ -17,10 +18,13 @@ def start_menu():
     pygame.mixer.music.load('menu_music.wav')
     pygame.mixer.music.set_volume(0.01)
     pygame.mixer.music.play(-1)
-
     screen = StartMenu()
     game = True
     res = -1
+    while not transition.get_transition():
+        transition.render()
+        pygame.display.flip()
+        clock.tick(30)
     while game:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -32,14 +36,18 @@ def start_menu():
                     pygame.mixer.music.stop()
 
         screen.render()
+        if transition.get_transition():
+            transition.render()
         pygame.display.flip()
 
         clock.tick(30)
         res = screen.get_result()
         if res != -1:
             game = False
-            clock.tick(30)
     if res == 1:
+        frame = transition.get_frame()
+        if frame != 35 and frame != -1:
+            transition.reverse()
         select_map()
 
 
@@ -50,6 +58,10 @@ def select_map():
     min_y = min(screen.maps, key=lambda x: x[1])[1]
     game = True
     res = -1
+    while not transition.get_transition():
+        transition.render()
+        pygame.display.flip()
+        clock.tick(30)
     while game:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -74,6 +86,8 @@ def select_map():
                     max_y -= 30
                     min_y -= 30
         screen.render()
+        if transition.get_transition():
+            transition.render()
         pygame.display.flip()
         clock.tick(30)
 
@@ -81,8 +95,14 @@ def select_map():
         if res != -1:
             game = False
     if res == 1:
+        frame = transition.get_frame()
+        if frame != 35 and frame != -1:
+            transition.reverse()
         start_menu()
     elif res == 2:
+        frame = transition.get_frame()
+        if frame != 35 and frame != -1:
+            transition.reverse()
         select_character()
     elif res == 3:
         map = screen.get_map()
@@ -97,6 +117,12 @@ def select_character():
     pygame.mixer.music.load('menu_music.wav')
     pygame.mixer.music.set_volume(0.1)
     pygame.mixer.music.play(-1)
+
+    while not transition.get_transition():
+        transition.render()
+        pygame.display.flip()
+        clock.tick(30)
+
     while game:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -110,11 +136,16 @@ def select_character():
                         screen.switch_chr(1)
 
         screen.render()
+        if transition.get_transition():
+            transition.render()
         pygame.display.flip()
         res = screen.get_result()
         if res != -1:
             game = False
     if res == 0:
+        frame = transition.get_frame()
+        if frame != 35 and frame != -1:
+            transition.reverse()
         select_map()
 
 
@@ -149,7 +180,7 @@ def play_map(map):
             game = False
         pygame.display.flip()
         clock.tick(fps)
-    result_game(screen.max_combo, screen.score, screen.count_marks, screen.accuracy)
+    result_game(screen.max_combo, screen.score, screen.count_marks, screen.accuracy, map)
 
 
 
@@ -187,24 +218,42 @@ def pause(objects, background):
     return res
 
 
-def result_game(count_combo, score, marks, accuracy):
+def result_game(count_combo, score, marks, accuracy, map):
     screen = ResultScreen(count_combo, score, marks, accuracy)
     game = True
+
+    transition.frame = -1
+    transition.transition_back = False
+    while not transition.get_transition():
+        transition.render()
+        pygame.display.flip()
+        clock.tick(30)
+
     while game:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 game = False
         screen.render()
+        if transition.get_transition():
+            transition.render()
         pygame.display.flip()
         clock.tick(fps)
         res = screen.get_result()
         if res == 0:
             game = False
+            frame = transition.get_frame()
+            if frame != 35 and frame != -1:
+                transition.reverse()
             select_map()
+        if res == 1:
+            game = False
+            play_map(map)
 
 
 if __name__ == '__main__':
     pygame.init()
+    pygame.display.set_caption('リズム')
+    transition = AnimationTransition()
     size = width, height = 1120, 720
     display = pygame.display.set_mode(size)
     start_menu()

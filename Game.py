@@ -94,7 +94,6 @@ class Game:
         self.notes.sort(key=lambda x: x[1], reverse=True)
         while self.notes[-1][1] <= 0:
             self.notes.pop()
-        print(self.notes)
         self.sliders_active = []
         self.sliders_near = []
         self.sliders_pressed = [-1, -1, -1, -1]
@@ -326,13 +325,13 @@ class Game:
         score = str(self.score)
         score = '0' * (10 - len(score)) + score
         pygame.draw.rect(display, pygame.Color('black'), (650, 30, 290, 50))
-        drawing_text(score, (650, 40), pygame.Color('white'), font_type='rizumu.ttf', font_size=40)
+        drawing_text(score, (650, 40), pygame.Color('white'), font_size=40)
 
         pygame.draw.rect(display, pygame.Color('black'), (650, 90, 150, 50))
-        drawing_text(str(int(self.accuracy)) + ' %', (660, 100), pygame.Color('white'), font_type='rizumu.ttf', font_size=40)
+        drawing_text(str(int(self.accuracy)) + ' %', (660, 100), pygame.Color('white'), font_size=40)
 
         pygame.draw.rect(display, pygame.Color('black'), (650, 150, 150, 50))
-        drawing_text(str(self.combo) + 'x', (650, 160), pygame.Color('white'), font_type='rizumu.ttf', font_size=40)
+        drawing_text(str(self.combo) + 'x', (650, 160), pygame.Color('white'), font_size=40)
 
     def end_game(self):
         return self.time_now > self.end_time

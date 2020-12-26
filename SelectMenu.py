@@ -3,11 +3,10 @@ from GameParameter import display
 from Button import Button
 from GameEffects import drawing_text
 
-
 exit_button_image = [pygame.image.load(f'image/menu_back_{i}.png') for i in range(7)]
 chr_button_image = [pygame.image.load(f'image/chr_button_{i}.png') for i in range(4)]
 play_button_image = (pygame.image.load('image/play_button_0.png'),
-                 pygame.image.load('image/play_button_1.png'))
+                     pygame.image.load('image/play_button_1.png'))
 
 song_rect = pygame.image.load('image/select_menu_rect.png')
 song_rect_active = pygame.image.load('image/select_menu_rect_active.png')
@@ -64,33 +63,33 @@ class SelectMenu:
         self.play_btn.draw(0, 0)
         self.chr_btn.draw(0, 0)
 
+        visible_maps = filter(lambda map: 1020 >= map[1] >= 20, self.maps)
 
-        for i, elem in enumerate(self.maps):
+        for i, elem in enumerate(visible_maps):
             x, y, map = elem
-            if 1020 >= y >= 20:
-                if 500 <= mouse[0] and y <= mouse[1] <= y + 80 and mouse[1] <= 720 - 96:
-                    display.blit(song_rect_active, (x, y))
-                    if click[0]:
-                        self.maps[self.active_map][0] += 30
-                        self.active_map = i
-                        map = self.maps[self.active_map][2]
-                        self.menu_background = map.background
-                        self.maps[i][0] -= 30
+            if 500 <= mouse[0] and y <= mouse[1] <= y + 80 and mouse[1] <= 720 - 96:
+                display.blit(song_rect_active, (x, y))
+                if click[0]:
+                    self.maps[self.active_map][0] += 30
+                    self.active_map = i
+                    map = self.maps[self.active_map][2]
+                    self.menu_background = map.background
+                    self.maps[i][0] -= 30
 
-                        pygame.mixer.music.load(f'Songs/{map.dir}/{map.general["AudioFilename"]}')
-                        pygame.mixer.music.set_volume(0.2)
-                        pygame.mixer.music.play(-1)
-                else:
-                    display.blit(song_rect, (x, y))
-                song_background = map.small_background
-                display.blit(song_background, (x, y))
-                title, artist, creator, version = map.title, map.artist, map.creator, map.version
-                drawing_text(title, (x + 130, y + 10), font_color=pygame.Color(200, 200, 200),
-                             font_size=20, font_type='rizumu.ttf')
-                drawing_text(artist, (x + 130, y + 32), font_color=pygame.Color(180, 180, 180),
-                             font_size=15, font_type='rizumu.ttf', italic=True)
-                drawing_text(version, (x + 130, y + 50), font_color=pygame.Color(255, 255, 255),
-                             font_size=23, font_type='rizumu.ttf')
+                    pygame.mixer.music.load(f'Songs/{map.dir}/{map.general["AudioFilename"]}')
+                    pygame.mixer.music.set_volume(0.2)
+                    pygame.mixer.music.play(-1)
+            else:
+                display.blit(song_rect, (x, y))
+            song_background = map.small_background
+            display.blit(song_background, (x, y))
+            title, artist, version = map.title, map.artist, map.version
+            drawing_text(title, (x + 130, y + 10), font_color=pygame.Color(200, 200, 200),
+                         font_size=20)
+            drawing_text(artist, (x + 130, y + 32), font_color=pygame.Color(180, 180, 180),
+                         font_size=15, italic=True)
+            drawing_text(version, (x + 130, y + 50), font_color=pygame.Color(255, 255, 255),
+                         font_size=23)
 
         display.blit(menu_back_plus, (224, 640))
         display.blit(menu_plus, (219, -4))

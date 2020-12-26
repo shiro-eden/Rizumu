@@ -7,6 +7,7 @@ from Button import Button
 background = pygame.image.load('image/result_background.png')
 
 back_button_image = [pygame.image.load(f'image/pause_back_{i}.png') for i in range(2)]
+restart_button_image = [pygame.image.load(f'image/pause_restart_{i}.png') for i in range(2)]
 
 miss = pygame.image.load('skin/hit0.png')
 bad = pygame.image.load('skin/hit50.png')
@@ -39,6 +40,8 @@ class ResultScreen:
 
         self.back_btn = Button(-40, 610, 236, 92, '', back_button_image, self.back)
 
+        self.restart_btn = Button(924, 610, 236, 92, '', restart_button_image, self.restart)
+
     def render(self):
         display.blit(background, (0, 0))
         display.blit(self.rank, (775, 110))
@@ -64,13 +67,17 @@ class ResultScreen:
 
         drawing_text(self.count_combo, (210, 520), (255, 255, 255), 50, font_type='corp_round_v1.ttf')
         score_width = len(self.score) * 25
-        x = 890 - score_width//2
+        x = 890 - score_width // 2
         drawing_text(self.score, (x, 530), (255, 255, 255), 50, font_type='corp_round_v1.ttf')
 
         self.back_btn.draw(0, 0)
+        self.restart_btn.draw(0, 0)
 
     def get_result(self):
         return self.result
 
     def back(self):
         self.result = 0
+
+    def restart(self):
+        self.result = 1
