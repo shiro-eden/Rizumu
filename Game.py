@@ -3,7 +3,6 @@ import math
 from GameParameter import clock, fps, display
 from GameEffects import drawing_text
 
-
 key0_image = pygame.image.load('skin/key0.png')
 key1_image = pygame.image.load('skin/key1.png')
 key0d_image = pygame.image.load('skin/key0d.png')
@@ -14,7 +13,7 @@ note1_image = pygame.image.load('skin/note1.png')
 note1s_image = pygame.image.load('skin/note1s.png')
 stage_image = pygame.image.load('skin/stage.png')
 stage_light_image = pygame.image.load('skin/stage_light.png')
-
+lightning_image = pygame.image.load('skin/lighting.png')
 hit0 = pygame.image.load('skin/hit0.png')
 hit50 = pygame.image.load('skin/hit50.png')
 hit100 = pygame.image.load('skin/hit100.png')
@@ -24,7 +23,7 @@ hit301 = pygame.image.load('skin/hit300g.png')
 
 v = 1000  # px/second
 st_x = 400
-time_uprise = 604#((720 - 116) / v * 1000) // 1
+time_uprise = 604  # ((720 - 116) / v * 1000) // 1
 keyboard = [pygame.K_d, pygame.K_f, pygame.K_j, pygame.K_k]
 
 
@@ -55,7 +54,7 @@ class Slider(pygame.sprite.Sprite):
             note_image = note1s_image
         self.h = math.floor((finish - start) * v / 1000)
         self.image = pygame.Surface((43, self.h))
-        self.rect = self.image.get_rect(x=st_x + 30 + 45 * column, y=-self.h )
+        self.rect = self.image.get_rect(x=st_x + 30 + 45 * column, y=-self.h)
         for i in range(math.floor(self.h // 14)):
             self.image.blit(note_image, (0, i * 14))
         ost = int(self.h % 14)
@@ -115,10 +114,35 @@ class Game:
         pygame.mixer.music.load(f'Songs/{self.map.dir}/{self.map.general["AudioFilename"]}')
         pygame.mixer.music.set_volume(0.2)
         pygame.mixer.music.play(1)
+
+        score_surface = self.map.background.subsurface((650, 30, 290, 50))
+        self.score_surface = pygame.surface.Surface((290, 50))
+        self.score_surface.fill((0, 0, 0))
+        score_surface.set_alpha(100)
+        self.score_surface.blit(score_surface, (0, 0))
+
+        acc_surface = self.map.background.subsurface((650, 90, 150, 50))
+        self.acc_surface = pygame.surface.Surface((150, 50))
+        self.acc_surface.fill((0, 0, 0))
+        acc_surface.set_alpha(100)
+        self.acc_surface.blit(acc_surface, (0, 0))
+
+        combo_surface = self.map.background.subsurface((650, 150, 150, 50))
+        self.combo_surface = pygame.surface.Surface((150, 50))
+        self.combo_surface.fill((0, 0, 0))
+        combo_surface.set_alpha(100)
+        self.combo_surface.blit(combo_surface, (0, 0))
+
+        self.lightnings = [-1, -1, -1, -1]
+
     def render(self):
         self.time_now = (pygame.time.get_ticks() - self.time)
         display.fill((0, 0, 0), (430, 0, 45 * 4, 720))
         display.blit(stage_image, (st_x, 0))
+        keys = pygame.key.get_pressed()
+        for key in range(4):
+            if keys[keyboard[key]]:
+                display.blit(stage_light_image, (st_x + 30 + 45 * key, 617 - 737))
         if self.notes or self.notes_near or self.notes_active:
             self.update_notes()
         if self.sliders or self.sliders_pressed[0] != -1 or self.sliders_pressed[1] != -1 or self.sliders_pressed[
@@ -130,7 +154,7 @@ class Game:
         display.fill((0, 0, 0), (st_x + 30, 700, 45 * 4, 20))
         self.show_marks()
         self.show_points()
-        keys = pygame.key.get_pressed()
+
         if keys[pygame.K_d]:
             display.blit(key0d_image, (st_x + 30, 617))
         else:
@@ -148,6 +172,14 @@ class Game:
         else:
             display.blit(key0_image, (st_x + 30 + 45 * 3, 617))
 
+        for key in range(4):
+            self.lightnings[key] -= 20
+            if self.lightnings[key] >= 0:
+                lightning = lightning_image
+                lightning.set_alpha(self.lightnings[key])
+                display.blit(lightning, (
+                st_x + 30 + 45 * key + 45 // 2 - lightning.get_width() // 2, 617 - lightning.get_height() // 2))
+
     def update_sliders(self):
         time = self.time_now
         if self.sliders:
@@ -163,7 +195,7 @@ class Game:
             if time >= slider[-2]:
                 self.sliders_failed.pop(i)
 
-        for i in range(len(self.sliders_pressed) -1, -1, -1):
+        for i in range(len(self.sliders_pressed) - 1, -1, -1):
             if self.sliders_pressed[i] != -1:
                 sprite, slider = self.sliders_pressed[i]
                 display.blit(sprite.image, sprite.rect)
@@ -257,7 +289,9 @@ class Game:
         keys = pygame.key.get_pressed()
         time = (pygame.time.get_ticks() - self.time)
         for key in range(4):
+
             if keys[keyboard[key]]:
+
                 note_index = -1
                 c = 1e10
                 for i in range(len(self.notes_near)):
@@ -280,6 +314,7 @@ class Game:
                         self.marks.append([300, 0])
                     elif ms <= self.od_max:
                         self.marks.append([301, 0])
+                    self.lightnings[key] = 255
 
     def show_marks(self):
         flag = False
@@ -324,14 +359,16 @@ class Game:
                 self.accuracy = 100
         score = str(self.score)
         score = '0' * (10 - len(score)) + score
-        pygame.draw.rect(display, pygame.Color('black'), (650, 30, 290, 50))
-        drawing_text(score, (650, 40), pygame.Color('white'), font_size=40)
+        display.blit(self.score_surface, (650, 30))
+        drawing_text(score, (650, 40), pygame.Color('white'), font_size=40, font_type='corp_round_v1.ttf')
 
-        pygame.draw.rect(display, pygame.Color('black'), (650, 90, 150, 50))
-        drawing_text(str(int(self.accuracy)) + ' %', (660, 100), pygame.Color('white'), font_size=40)
+        display.blit(self.acc_surface, (650, 90))
+        drawing_text(str(int(self.accuracy)) + ' %', (650, 100), pygame.Color('white'), font_size=40,
+                     font_type='corp_round_v1.ttf')
 
-        pygame.draw.rect(display, pygame.Color('black'), (650, 150, 150, 50))
-        drawing_text(str(self.combo) + 'x', (650, 160), pygame.Color('white'), font_size=40)
+        display.blit(self.combo_surface, (650, 150))
+        drawing_text(str(self.combo) + 'x', (650, 160), pygame.Color('white'), font_size=40,
+                     font_type='corp_round_v1.ttf')
 
     def end_game(self):
         return self.time_now > self.end_time
