@@ -115,19 +115,19 @@ class Game:
         pygame.mixer.music.set_volume(0.2)
         pygame.mixer.music.play(1)
 
-        score_surface = self.map.background.subsurface((650, 30, 290, 50))
+        score_surface = self.map.background.subsurface((670, 30, 290, 50))
         self.score_surface = pygame.surface.Surface((290, 50))
         self.score_surface.fill((0, 0, 0))
         score_surface.set_alpha(100)
         self.score_surface.blit(score_surface, (0, 0))
 
-        acc_surface = self.map.background.subsurface((650, 90, 150, 50))
-        self.acc_surface = pygame.surface.Surface((150, 50))
+        acc_surface = self.map.background.subsurface((670, 90, 200, 50))
+        self.acc_surface = pygame.surface.Surface((200, 50))
         self.acc_surface.fill((0, 0, 0))
         acc_surface.set_alpha(100)
         self.acc_surface.blit(acc_surface, (0, 0))
 
-        combo_surface = self.map.background.subsurface((650, 150, 150, 50))
+        combo_surface = self.map.background.subsurface((670, 150, 150, 50))
         self.combo_surface = pygame.surface.Surface((150, 50))
         self.combo_surface.fill((0, 0, 0))
         combo_surface.set_alpha(100)
@@ -359,15 +359,15 @@ class Game:
                 self.accuracy = 100
         score = str(self.score)
         score = '0' * (10 - len(score)) + score
-        display.blit(self.score_surface, (650, 30))
-        drawing_text(score, (650, 40), pygame.Color('white'), font_size=40, font_type='corp_round_v1.ttf')
+        display.blit(self.score_surface, (670, 30))
+        drawing_text(score, (670, 40), pygame.Color('white'), font_size=40, font_type='corp_round_v1.ttf')
 
-        display.blit(self.acc_surface, (650, 90))
-        drawing_text(str(int(self.accuracy)) + ' %', (650, 100), pygame.Color('white'), font_size=40,
+        display.blit(self.acc_surface, (670, 90))
+        drawing_text(str(('%.2f' % self.accuracy)) + ' %', (670, 100), pygame.Color('white'), font_size=40,
                      font_type='corp_round_v1.ttf')
 
-        display.blit(self.combo_surface, (650, 150))
-        drawing_text(str(self.combo) + 'x', (650, 160), pygame.Color('white'), font_size=40,
+        display.blit(self.combo_surface, (670, 150))
+        drawing_text(str(self.combo) + 'x', (670, 160), pygame.Color('white'), font_size=40,
                      font_type='corp_round_v1.ttf')
 
     def end_game(self):

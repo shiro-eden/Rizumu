@@ -36,7 +36,7 @@ class ResultScreen:
             self.rank = pygame.image.load('skin/rank_C.png')
         else:
             self.rank = pygame.image.load('skin/rank_D.png')
-        self.accuracy = str(int(accuracy)) + '%'
+        self.accuracy = str('%.2f' % accuracy) + '%'
 
         self.back_btn = Button(-40, 610, 236, 92, '', back_button_image, self.back)
 
@@ -45,7 +45,7 @@ class ResultScreen:
     def render(self):
         display.blit(background, (0, 0))
         display.blit(self.rank, (775, 110))
-        drawing_text(self.accuracy, (840, 400), (255, 255, 255), 60, font_type='corp_round_v1.ttf')
+        drawing_text(self.accuracy, (790, 400), (255, 255, 255), 60, font_type='corp_round_v1.ttf')
         display.blit(miss, (0, 40))
         drawing_text(self.marks[0], (65, 100), (200, 0, 0), 50, font_type='corp_round_v1.ttf')
 
