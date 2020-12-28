@@ -2,12 +2,13 @@ import pygame
 from GameParameter import display
 from Button import Button
 from GameEffects import drawing_text
+from Settings import load_settings
 
 exit_button_image = [pygame.image.load(f'image/menu_back_{i}.png') for i in range(2)]
 chr_button_image = [pygame.image.load(f'image/chr_button_{i}.png') for i in range(4)]
 play_button_image = (pygame.image.load('image/play_button_0.png'),
                      pygame.image.load('image/play_button_1.png'))
-
+settings_button_image = [pygame.image.load(f'image/settings_button_{i}.png') for i in range(2)]
 song_rect = pygame.image.load('image/select_menu_rect.png')
 song_rect_active = pygame.image.load('image/select_menu_rect_active.png')
 menu_back_plus = pygame.image.load('image/menu_back+.png')
@@ -17,6 +18,7 @@ back_mask = pygame.image.load('image/back_mask.png')
 
 class SelectMenu:
     def __init__(self, maps):
+        settings_values = load_settings()
         self.result = -1
         maps.sort(key=lambda x: (x.artist, x.title))
         for i in range(len(maps)):
@@ -29,13 +31,14 @@ class SelectMenu:
 
         self.play_btn = Button(908, 650, 222, 92, '', play_button_image, self.start_game)
 
+        self.settings_btn = Button(908, 0, 223, 92, '', settings_button_image, self.open_settings)
         self.active_map = 0
         self.maps[0][0] -= 30
         self.menu_background = self.maps[self.active_map][2].background
 
         map = f'Songs/{self.maps[0][2].dir}/{self.maps[0][2].general["AudioFilename"]}'
         pygame.mixer.music.load(map)
-        pygame.mixer.music.set_volume(0.1)
+        pygame.mixer.music.set_volume(0.1 * int(settings_values['music_volume']))
         pygame.mixer.music.play(-1)
 
     def back(self):
@@ -46,6 +49,9 @@ class SelectMenu:
 
     def start_game(self):
         self.result = 3
+
+    def open_settings(self):
+        self.result = 4
 
     def get_result(self):
         return self.result
@@ -58,7 +64,7 @@ class SelectMenu:
         click = pygame.mouse.get_pressed()
         display.blit(self.menu_background, (0, 0))
         display.blit(back_mask, (0, 0))
-
+        settings_values = load_settings()
         for i, elem in enumerate(self.maps):
             x, y, map = elem
             if 1020 >= y >= -60:
@@ -72,7 +78,7 @@ class SelectMenu:
                         self.maps[i][0] -= 30
 
                         pygame.mixer.music.load(f'Songs/{map.dir}/{map.general["AudioFilename"]}')
-                        pygame.mixer.music.set_volume(0.2)
+                        pygame.mixer.music.set_volume(0.1 * int(settings_values['music_volume']))
                         pygame.mixer.music.play(-1)
                 else:
                     display.blit(song_rect, (x, y))
@@ -92,3 +98,4 @@ class SelectMenu:
         self.exit_btn.draw(0, 0)
         self.play_btn.draw(0, 0)
         self.chr_btn.draw(0, 0)
+        self.settings_btn.draw(0, 0)

@@ -32,6 +32,7 @@ class PauseMenu:
 
         self.back_btn = Button(455, 500, 238, 72, '', back_button_image, self.back)
 
+
     def get_result(self):
         return self.result
 

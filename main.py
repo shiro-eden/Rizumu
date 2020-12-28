@@ -12,11 +12,14 @@ from CharacterMenu import CharacterMenu
 from Game import Game, stage_image, key0_image, key1_image
 from PauseMenu import PauseMenu
 from ResultScreen import ResultScreen
+from Settings import Settings, load_settings
+
+settings_values = load_settings()
 
 
 def start_menu():
     pygame.mixer.music.load('menu_music.wav')
-    pygame.mixer.music.set_volume(0.01)
+    pygame.mixer.music.set_volume(0.1 * int(settings_values['music_volume']))
     pygame.mixer.music.play(-1)
     screen = StartMenu()
     game = True
@@ -126,6 +129,48 @@ def select_map():
     elif res == 3:
         map = screen.get_map()
         play_map(map)
+    elif res == 4:
+        frame = transition.get_frame()
+        if frame != 35 and frame != -1:
+            transition.reverse()
+        transition.background = None
+        settings()
+        select_map()
+
+
+def settings():
+    screen = Settings()
+    game = True
+    while not transition.get_transition():
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                return
+        transition.render()
+        pygame.display.flip()
+        clock.tick(30)
+    screen.render()
+    while game:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                return
+        if transition.get_transition():
+            if not transition.background:
+                pygame.image.save(display, 'image/background_for_load.png')
+                transition.background = pygame.image.load('image/background_for_load.png')
+            transition.render()
+        else:
+            screen.render()
+        pygame.display.flip()
+        clock.tick(fps)
+        res = screen.get_result()
+        if res != -1:
+            game = False
+    if res == 0:
+        frame = transition.get_frame()
+        if frame != 35 and frame != -1:
+            transition.reverse()
+        transition.background = None
+        return
 
 
 def select_character():
@@ -134,7 +179,7 @@ def select_character():
     game = True
     res = -1
     pygame.mixer.music.load('menu_music.wav')
-    pygame.mixer.music.set_volume(0.1)
+    pygame.mixer.music.set_volume(0.1 * int(settings_values['music_volume']))
     pygame.mixer.music.play(-1)
 
     while not transition.get_transition():
@@ -210,7 +255,6 @@ def play_map(map):
         clock.tick(fps)
     transition.background = None
     result_game(screen.max_combo, screen.score, screen.count_marks, screen.accuracy, map)
-
 
 
 def pause(objects, background):

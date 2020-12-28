@@ -2,6 +2,7 @@ import pygame
 import math
 from GameParameter import clock, fps, display
 from GameEffects import drawing_text
+from Settings import load_settings
 
 key0_image = pygame.image.load('skin/key0.png')
 key1_image = pygame.image.load('skin/key1.png')
@@ -21,10 +22,11 @@ hit200 = pygame.image.load('skin/hit200.png')
 hit300 = pygame.image.load('skin/hit300.png')
 hit301 = pygame.image.load('skin/hit300g.png')
 
-v = 1000  # px/second
 st_x = 400
 time_uprise = 604  # ((720 - 116) / v * 1000) // 1
 keyboard = [pygame.K_d, pygame.K_f, pygame.K_j, pygame.K_k]
+settings_values = load_settings()
+v = int(settings_values['scroll_speed'])  # px/second
 
 
 class Note(pygame.sprite.Sprite):
@@ -40,7 +42,6 @@ class Note(pygame.sprite.Sprite):
         self.rect.y = 0
 
     def update(self):
-
         self.rect.y += math.ceil(v / fps)
 
 
@@ -67,6 +68,9 @@ class Slider(pygame.sprite.Sprite):
 
 class Game:
     def __init__(self, map):
+        global v
+        settings_values = load_settings()
+        v = int(settings_values['scroll_speed'])  # px/second
         self.map = map[2]
         self.score = 0
         self.accuracy = 100
@@ -112,7 +116,7 @@ class Game:
         display.blit(self.map.background, (0, 0))
 
         pygame.mixer.music.load(f'Songs/{self.map.dir}/{self.map.general["AudioFilename"]}')
-        pygame.mixer.music.set_volume(0.2)
+        pygame.mixer.music.set_volume(0.1 * int(settings_values['music_volume']))
         pygame.mixer.music.play(1)
 
         score_surface = self.map.background.subsurface((670, 30, 290, 50))
@@ -178,7 +182,7 @@ class Game:
                 lightning = lightning_image
                 lightning.set_alpha(self.lightnings[key])
                 display.blit(lightning, (
-                st_x + 30 + 45 * key + 45 // 2 - lightning.get_width() // 2, 617 - lightning.get_height() // 2))
+                    st_x + 30 + 45 * key + 45 // 2 - lightning.get_width() // 2, 617 - lightning.get_height() // 2))
 
     def update_sliders(self):
         time = self.time_now
