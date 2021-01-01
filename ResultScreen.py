@@ -1,20 +1,20 @@
 import pygame
 from GameParameter import clock, fps, display
-from GameEffects import drawing_text
+from GameEffects import drawing_text, load_image
 from Button import Button
 
 
-background = pygame.image.load('image/result_background.png')
+background = load_image('result_background.png')
 
-back_button_image = [pygame.image.load(f'image/pause_back_{i}.png') for i in range(2)]
-restart_button_image = [pygame.image.load(f'image/pause_restart_{i}.png') for i in range(2)]
+back_button_image = [load_image(f'pause_back_{i}.png') for i in range(2)]
+restart_button_image = [load_image(f'pause_restart_{i}.png') for i in range(2)]
 
-miss = pygame.image.load('skin/hit0.png')
-bad = pygame.image.load('skin/hit50.png')
-good = pygame.image.load('skin/hit100.png')
-great = pygame.image.load('skin/hit200.png')
-perfect = pygame.image.load('skin/hit300.png')
-marvelous = pygame.image.load('skin/hit300g.png')
+miss = load_image('skin/hit0.png')
+bad = load_image('skin/hit50.png')
+good = load_image('skin/hit100.png')
+great = load_image('skin/hit200.png')
+perfect = load_image('skin/hit300.png')
+marvelous = load_image('skin/hit300g.png')
 
 
 class ResultScreen:
@@ -25,17 +25,17 @@ class ResultScreen:
         self.score = str(score)
         self.marks = [str(i) + 'x' for i in marks.values()]
         if accuracy == 100:
-            self.rank = pygame.image.load('skin/rank_SS.png')
+            self.rank = load_image('skin/rank_SS.png')
         elif accuracy > 95:
-            self.rank = pygame.image.load('skin/rank_S.png')
+            self.rank = load_image('skin/rank_S.png')
         elif accuracy > 90:
-            self.rank = pygame.image.load('skin/rank_A.png')
+            self.rank = load_image('skin/rank_A.png')
         elif accuracy > 80:
-            self.rank = pygame.image.load('skin/rank_B.png')
+            self.rank = load_image('skin/rank_B.png')
         elif accuracy > 70:
-            self.rank = pygame.image.load('skin/rank_C.png')
+            self.rank = load_image('skin/rank_C.png')
         else:
-            self.rank = pygame.image.load('skin/rank_D.png')
+            self.rank = load_image('skin/rank_D.png')
         self.accuracy = str('%.2f' % accuracy) + '%'
 
         self.back_btn = Button(-40, 610, 236, 92, '', back_button_image, self.back)

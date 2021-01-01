@@ -1,20 +1,21 @@
 import pygame
 from GameParameter import display
+from GameEffects import load_image
 from Button import Button
 
 
 st_x = 400
 
-background_image = pygame.image.load('image/pause_background.png')
+background_image = load_image('pause_background.png')
 
-continue_button_image = (pygame.image.load('image/pause_continue_0.png'),
-                   pygame.image.load('image/pause_continue_1.png'))
+continue_button_image = (load_image('pause_continue_0.png'),
+                         load_image('pause_continue_1.png'))
 
-restart_button_image = (pygame.image.load('image/pause_restart_0.png'),
-                   pygame.image.load('image/pause_restart_1.png'))
+restart_button_image = (load_image('pause_restart_0.png'),
+                        load_image('pause_restart_1.png'))
 
-back_button_image = (pygame.image.load('image/pause_back_0.png'),
-                   pygame.image.load('image/pause_back_1.png'))
+back_button_image = (load_image('pause_back_0.png'),
+                     load_image('pause_back_1.png'))
 
 
 class PauseMenu:

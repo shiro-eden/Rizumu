@@ -1,13 +1,12 @@
 import os
 import pygame
-from pprint import pprint
 
 maps = []
 
 
 class Map():
     def __init__(self, foldername, filename):
-        file = open(f'Songs\\{foldername}\\{filename}', encoding="utf-8").read().split('\n')
+        file = open(f'maps\\{foldername}\\{filename}', encoding="utf-8").read().split('\n')
         self.dir = foldername
         general_line = file.index('[General]')
         self.general = {}
@@ -86,15 +85,15 @@ class Map():
                 self.x_offset = int(x_offset)
                 self.y_offset = int(y_offset)
                 self.background_file = background_file.rstrip('"').lstrip('"')
-                self.background = pygame.transform.smoothscale(pygame.image.load(f'Songs/{self.dir}/{self.background_file}'), (1120, 720))
+                self.background = pygame.transform.smoothscale(pygame.image.load(f'maps/{self.dir}/{self.background_file}'), (1120, 720))
                 self.small_background = pygame.transform.smoothscale(self.background, (120, 80))
 
 
 def import_maps():  # Создает объекты класса Map, помещает их в maps
-    songs = os.listdir(path="Songs")
+    songs = os.listdir(path="maps")
     maps = []
     for song in songs:
-        file_names = os.listdir(path=f'Songs/{song}')
+        file_names = os.listdir(path=f'maps/{song}')
         diffs = [diff for diff in file_names if diff.endswith('.osu')]
         for diff in diffs:
             map = Map(song, diff)

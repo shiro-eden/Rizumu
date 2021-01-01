@@ -1,17 +1,17 @@
 import pygame
 from GameParameter import display
 from Button import Button
-from GameEffects import drawing_text
+from GameEffects import drawing_text, load_image
 
 
-exit_button_image = (pygame.image.load('image/exit_button.png'),
-                    pygame.image.load('image/exit_button_active.png'))
+exit_button_image = (load_image('exit_button.png'),
+                    load_image('exit_button_active.png'))
 
-background_image = pygame.image.load('image/menu_background.png')
+background_image = load_image('menu_background.png')
 
-equalizer_image = [pygame.image.load(f'image/equalizer_{i}.png') for i in range(12)]
+equalizer_image = [load_image(f'equalizer/equalizer_{i}.png') for i in range(12)]
 
-rizumu_image = pygame.image.load('image/rizumu.png')
+rizumu_image = load_image('rizumu.png')
 
 
 class StartMenu:

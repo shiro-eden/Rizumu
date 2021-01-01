@@ -4,7 +4,7 @@ from copy import deepcopy
 
 from Map import import_maps
 from GameParameter import clock, fps
-from GameEffects import AnimationTransition
+from GameEffects import AnimationTransition, load_image, load_music
 
 from StartMenu import StartMenu  # импорты экранов
 from SelectMenu import SelectMenu
@@ -18,7 +18,7 @@ settings_values = load_settings()
 
 
 def start_menu():
-    pygame.mixer.music.load('menu_music.wav')
+    pygame.mixer.music.load(load_music('menu_music.wav'))
     pygame.mixer.music.set_volume(0.1 * int(settings_values['music_volume']))
     pygame.mixer.music.play(-1)
     screen = StartMenu()
@@ -45,7 +45,7 @@ def start_menu():
         if transition.get_transition():
             if not transition.background:
                 pygame.image.save(display, 'image/background_for_load.png')
-                transition.background = pygame.image.load('image/background_for_load.png')
+                transition.background = load_image('background_for_load.png')
             transition.render()
         else:
             screen.render()
@@ -104,7 +104,7 @@ def select_map():
         if transition.get_transition():
             if not transition.background:
                 pygame.image.save(display, 'image/background_for_load.png')
-                transition.background = pygame.image.load('image/background_for_load.png')
+                transition.background = load_image('background_for_load.png')
             transition.render()
         else:
             screen.render()
@@ -156,7 +156,7 @@ def settings():
         if transition.get_transition():
             if not transition.background:
                 pygame.image.save(display, 'image/background_for_load.png')
-                transition.background = pygame.image.load('image/background_for_load.png')
+                transition.background = load_image('background_for_load.png')
             transition.render()
         else:
             screen.render()
@@ -178,7 +178,7 @@ def select_character():
 
     game = True
     res = -1
-    pygame.mixer.music.load('menu_music.wav')
+    pygame.mixer.music.load(load_music('menu_music.wav'))
     pygame.mixer.music.set_volume(0.1 * int(settings_values['music_volume']))
     pygame.mixer.music.play(-1)
 
@@ -206,7 +206,7 @@ def select_character():
         if transition.get_transition():
             if not transition.background:
                 pygame.image.save(display, 'image/background_for_load.png')
-                transition.background = pygame.image.load('image/background_for_load.png')
+                transition.background = load_image('background_for_load.png')
             transition.render()
         else:
             screen.render()
@@ -245,6 +245,7 @@ def play_map(map):
                     elif result == 1:
                         return play_map(map)
                     elif result == 2:
+                        transition.background = None
                         return select_map()
                 else:
                     screen.handle_keys_notes()
@@ -261,7 +262,7 @@ def pause(objects, background):
     screen = PauseMenu(objects, background)
     game = True
     timer = False
-    timer_image = [pygame.image.load(f'image/timer_{i}.png') for i in range(1, 4)]
+    timer_image = [load_image(f'timer_{i}.png') for i in range(1, 4)]
     while game:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -313,7 +314,7 @@ def result_game(count_combo, score, marks, accuracy, map):
         if transition.get_transition():
             if not transition.background:
                 pygame.image.save(display, 'image/background_for_load.png')
-                transition.background = pygame.image.load('image/background_for_load.png')
+                transition.background = load_image('background_for_load.png')
             transition.render()
         else:
             screen.render()

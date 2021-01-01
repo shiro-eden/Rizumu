@@ -1,0 +1,3 @@
+scroll_speed:0
+music_volume:100
+character:4

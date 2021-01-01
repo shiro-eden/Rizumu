@@ -1,29 +1,55 @@
 import pygame
-from GameParameter import display, character
+from GameParameter import display
 from Button import Button
-from GameEffects import drawing_text
+from GameEffects import drawing_text, load_image, AnimatedSprite
 
+character_list = (AnimatedSprite('flandre/flandre', 3, 450, 182, 10),
+                  AnimatedSprite('marisa/marisa', 4, 367, 182, 10),
+                  AnimatedSprite('reimu/reimu', 10, 405, 182, 8, True),
+                  AnimatedSprite('remilia/remilia', 5, 428, 182, 10),
+                  AnimatedSprite('sakuya/sakuya', 7, 410, 182, 10, True))
 
-character_list = ((pygame.image.load('image/flandre.png'), (450, 182)),
-                  (pygame.image.load('image/marisa.png'), (367, 182)),
-                  (pygame.image.load('image/reimu.png'), (405, 182)),
-                  (pygame.image.load('image/remilia.png'), (428, 182)),
-                  (pygame.image.load('image/sakuya.png'), (480, 182)))
+character_ability = (('Во ремя игры заряжается способность. При её',
+                      'активации на некоторое время все оценки "Miss"',
+                      ' и "Bad" станут "Perfect"'),
 
-left_button_image = (pygame.image.load('image/left_button_0.png'),
-                     pygame.image.load('image/left_button_1.png'))
-right_button_image = (pygame.image.load('image/right_button_0.png'),
-                     pygame.image.load('image/right_button_1.png'))
-confirm_button_image = (pygame.image.load('image/confirm_button_0.png'),
-                        pygame.image.load('image/confirm_button_1.png'))
-exit_button_image = [pygame.image.load(f'image/menu_back_{i}.png') for i in range(2)]
+                     ('Во ремя игры заряжается способность. При её',
+                      'активации на некоторое время все ноты будут',
+                      ' уничтожены и дадут оценку "Great" '),
+
+                     ('Во время игры, комбо не будет сбрасываться,',
+                      'если вы пропустили ноту и комбо меньше 100'),
+
+                     ('Во ремя игры заряжается способность. При',
+                      'её активации на некоторое время все оценки',
+                      ' "Great" и "Good" станут "Perfect"'),
+
+                     ('Во время игры, все оценки, кроме "Perfect" ',
+                      'и "Marvelous", сбивают вам комбо, но оценки',
+                      ' дают на 50% больше очков'))
+
+left_button_image = (load_image('left_button_0.png'),
+                     load_image('left_button_1.png'))
+right_button_image = (load_image('right_button_0.png'),
+                      load_image('right_button_1.png'))
+confirm_button_image = (load_image('confirm_button_0.png'),
+                        load_image('confirm_button_1.png'))
+exit_button_image = [load_image(f'menu_back_{i}.png') for i in range(2)]
+menu_background = [load_image('menu_background.png'),
+                   load_image('menu_back+.png'),
+                   load_image('menu+.png')]
 
 
 class CharacterMenu:
     def __init__(self):
         self.result = -1
 
-        self.ind_chr = character
+        with open('user_settings.txt') as file:
+            for elem in file:
+                name, value = elem[:elem.find(':')], elem[elem.find(':') + 1:]
+                if name == 'character':
+                    self.ind_chr = self.character = int(value)
+                    break
         self.names_chr = (('Flandre', (415, 110)), ('Marisa', (420, 110)), ('Reimu', (440, 110)),
                           ('Remilia', (425, 110)), ('Sakuya', (430, 110)))
 
@@ -33,16 +59,23 @@ class CharacterMenu:
         self.confirm_btn = Button(1037, 640, 86, 86, '', confirm_button_image, self.confirm_chr)
 
     def render(self):
-        display.blit(pygame.image.load('image/menu_background.png'), (0, 0))
-        display.blit(pygame.image.load('image/menu_back+.png'), (0, 620))
-        display.blit(pygame.image.load('image/menu+.png'), (0, 0))
+        display.blit(menu_background[0], (0, 0))
+        display.blit(menu_background[1], (0, 620))
+        display.blit(menu_background[2], (0, 0))
 
-        chr, cords = character_list[self.ind_chr]
-        if self.ind_chr == character:
+        chr = character_list[self.ind_chr]
+        if self.ind_chr == self.character:
             pygame.draw.circle(display, (212, 84, 182), (565, 385), 220)
-        display.blit(chr, cords)
+        chr.update()
         text, cords = self.names_chr[self.ind_chr]
         drawing_text(text, cords, font_color=pygame.Color('White'), font_size=70)
+        text = character_ability[self.ind_chr]
+        for i in range(len(text)):
+            drawing_text(text[i], (240 - 10 * i + 2, 600 + 30 * i + 2), font_size=30,
+                         font_color=pygame.Color('Black'))
+        for i in range(len(text)):
+            drawing_text(text[i], (240 - 10 * i, 600 + 30 * i), font_color=pygame.Color('White'),
+                         font_size=30)
 
         self.exit_btn.draw(0, 0)
         self.confirm_btn.draw(0, 0)
@@ -60,8 +93,18 @@ class CharacterMenu:
         self.result = 0
 
     def confirm_chr(self):
-        global character
-        character = self.ind_chr
+        self.character = self.ind_chr
+        t = []
+        with open('user_settings.txt') as file:
+            for elem in file:
+                name, value = elem[:elem.find(':')], elem[elem.find(':') + 1:]
+                if name == 'character':
+                    t.append(f'character:{self.character}')
+                else:
+                    t.append(f'{name}:{value}')
+        with open('user_settings.txt', 'w') as file:
+            for elem in t:
+                print(elem.rstrip(), sep='', file=file)
 
     def get_result(self):
         return self.result
