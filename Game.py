@@ -23,10 +23,10 @@ hit300 = load_image('skin/hit300.png')
 hit301 = load_image('skin/hit300g.png')
 
 st_x = 350
-time_uprise = 604  # ((720 - 116) / v * 1000) // 1
 keyboard = [pygame.K_d, pygame.K_f, pygame.K_j, pygame.K_k]
 settings_values = load_settings()
 v = int(settings_values['scroll_speed'])  # px/second
+time_uprise = ((720 - 116) / v * 1000) // 1
 
 ability_img = [load_image(f'ability_bar/ability_bar_{i}.png') for i in range(17)]
 

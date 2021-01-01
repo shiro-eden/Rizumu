@@ -1,2 +1,0 @@
-scroll_speed:1030
-music_volume:1
