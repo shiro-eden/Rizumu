@@ -1,7 +1,8 @@
 import pygame
+import sqlite3
 from GameParameter import display
 from Button import Button
-from GameEffects import drawing_text, load_image
+from GameEffects import drawing_text, load_image, load_fonts
 from Settings import load_settings
 
 exit_button_image = [load_image(f'menu_back_{i}.png') for i in range(2)]
@@ -14,7 +15,7 @@ song_rect_active = load_image('select_menu_rect_active.png')
 menu_back_plus = load_image('menu_back+.png')
 menu_plus = load_image('menu+.png')
 back_mask = load_image('back_mask.png')
-
+records_rect = load_image('record_rect.png')
 settings_values = load_settings()
 
 
@@ -42,6 +43,26 @@ class SelectMenu:
         pygame.mixer.music.load(map)
         pygame.mixer.music.set_volume(0.1 * int(settings_values['music_volume']))
         pygame.mixer.music.play(-1)
+
+        self.records = {}
+        con = sqlite3.connect('records.db')
+        cur = con.cursor()
+        result = cur.execute("SELECT * FROM Records")
+        for elem in result:
+            elem = list(elem)
+            elem[6] = 'Сыграно ' + elem[6] + ', ' + elem[7]
+            elem[3] = 'Score: ' + str(elem[3])
+            elem[5] = 'Combo: ' + str(elem[5]) + 'x'
+            elem[4] = str('%.2f' % elem[4]) + '%'
+            for i in range(3, 8):
+                elem[i] = drawing_text(str(elem[i]), (-100, -100), font_color=(255, 255, 255), font_size=15,
+                                       font_type='rizumu.ttf')
+            if elem[1] in self.records:
+                self.records[elem[1]].append(elem)
+            else:
+                self.records[elem[1]] = [elem]
+        for i in self.records:
+            self.records[i] = list(reversed(self.records[i]))
 
     def back(self):
         self.result = 1
@@ -92,7 +113,6 @@ class SelectMenu:
                              font_size=15, italic=True)
                 drawing_text(version, (x + 130, y + 50), font_color=pygame.Color(255, 255, 255),
                              font_size=23)
-
         display.blit(menu_back_plus, (0, 620))
         display.blit(menu_plus, (0, 0))
         self.play_btn.draw(0, 0)
@@ -100,3 +120,19 @@ class SelectMenu:
         self.play_btn.draw(0, 0)
         self.chr_btn.draw(0, 0)
         self.settings_btn.draw(0, 0)
+
+        if int(self.maps[self.active_map][2].map_id) in self.records:
+            while len(self.records[int(self.maps[self.active_map][2].map_id)]) > 6:
+                self.records[int(self.maps[self.active_map][2].map_id)].pop()
+            records = self.records[int(self.maps[self.active_map][2].map_id)]
+        else:
+            records = []
+        for y, elem in enumerate(records):
+            elem_id, map_id, mapset_id, score, accuracy, combo, date, time = elem
+            y *= 90
+            y += 100
+            display.blit(records_rect, (-200, y))
+            display.blit(date, (10, y + 10))
+            display.blit(score, (10, y + 30))
+            display.blit(accuracy, (300, y + 60))
+            display.blit(combo, (10, y + 50))

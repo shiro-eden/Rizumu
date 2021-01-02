@@ -92,7 +92,7 @@ def select_map():
                         maps[i][1] += 30
                     max_y += 30
                     min_y += 30
-                if event.button == 5:
+                elif event.button == 5:
                     if max_y <= 550:
                         continue
                     for i, elem in enumerate(screen.maps):
@@ -101,6 +101,9 @@ def select_map():
                         maps[i][1] -= 30
                     max_y -= 30
                     min_y -= 30
+
+                elif event.button == 1:
+                    screen.render()
         if transition.get_transition():
             if not transition.background:
                 pygame.image.save(display, 'image/background_for_load.png')
@@ -293,7 +296,7 @@ def pause(objects, background):
 
 
 def result_game(count_combo, score, marks, accuracy, map):
-    screen = ResultScreen(count_combo, score, marks, accuracy)
+    screen = ResultScreen(count_combo, score, marks, accuracy, map)
     game = True
 
     transition.frame = -1

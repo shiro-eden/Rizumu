@@ -56,6 +56,8 @@ class Map():
         self.artist = self.metadata['Artist']
         self.creator = self.metadata['Creator']
         self.version = self.metadata['Version']
+        self.map_id = self.metadata['BeatmapID']
+        self.mapset_id = self.metadata['BeatmapSetID']
 
         self.HP = self.difficulty['HPDrainRate']
         self.OD = self.difficulty['OverallDifficulty']

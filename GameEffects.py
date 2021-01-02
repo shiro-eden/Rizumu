@@ -28,7 +28,7 @@ def drawing_text(text, cords, font_color=pygame.Color('black'), font_size=30,
     font_type.set_italic(italic)
     text = font_type.render(text, True, font_color)
     display.blit(text, cords)
-
+    return text
 
 def load_image(filename):
     fullname = "image/" + filename

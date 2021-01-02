@@ -2,8 +2,8 @@ import pygame
 from GameParameter import clock, fps, display
 from GameEffects import drawing_text, load_image
 from Button import Button
-
-
+import sqlite3
+import datetime as dt
 background = load_image('result_background.png')
 
 back_button_image = [load_image(f'pause_back_{i}.png') for i in range(2)]
@@ -18,12 +18,12 @@ marvelous = load_image('skin/hit300g.png')
 
 
 class ResultScreen:
-    def __init__(self, count_combo, score, marks, accuracy):
+    def __init__(self, count_combo, score, marks, accuracy, map):
         self.result = -1
-
         self.count_combo = str(count_combo) + 'x'
         self.score = str(score)
         self.marks = [str(i) + 'x' for i in marks.values()]
+
         if accuracy == 100:
             self.rank = load_image('skin/rank_SS.png')
         elif accuracy > 95:
@@ -42,6 +42,16 @@ class ResultScreen:
 
         self.restart_btn = Button(924, 610, 236, 92, '', restart_button_image, self.restart)
 
+        map_id = map[2].map_id
+        mapset_id = map[2].mapset_id
+        time = str(dt.datetime.now().time()).split('.')[0]
+        date = str(dt.datetime.now().date())
+        print(time,date)
+        con = sqlite3.connect('records.db')
+        cur = con.cursor()
+        cur.execute(
+            f"INSERT INTO Records(map_id, mapset_id, score, accuracy, combo, date, time) VALUES({map_id}, {mapset_id}, {score}, {accuracy}, {count_combo}, '{date}', '{time}')")
+        con.commit()
     def render(self):
         display.blit(background, (0, 0))
         display.blit(self.rank, (775, 110))
@@ -63,7 +73,6 @@ class ResultScreen:
 
         display.blit(marvelous, (290, 315))
         drawing_text(self.marks[5], (355, 390), (235, 250, 255), 50, font_type='corp_round_v1.ttf')
-
 
         drawing_text(self.count_combo, (210, 520), (255, 255, 255), 50, font_type='corp_round_v1.ttf')
         score_width = len(self.score) * 25
