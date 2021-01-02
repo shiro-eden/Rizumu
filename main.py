@@ -64,6 +64,8 @@ def start_menu():
 
 
 def select_map():
+    scrolling_v = 0
+    scrolling_a = -3000
     maps = import_maps()
     screen = SelectMenu(maps)
     max_y = max(screen.maps, key=lambda x: x[1])[1]
@@ -84,26 +86,34 @@ def select_map():
                 game = False
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if event.button == 4:
-                    if min_y >= 100:
-                        continue
-                    for i, elem in enumerate(screen.maps):
-                        if min_y >= 100:
-                            continue
-                        maps[i][1] += 30
-                    max_y += 30
-                    min_y += 30
+                    scrolling_v += 600
+
                 elif event.button == 5:
-                    if max_y <= 550:
-                        continue
-                    for i, elem in enumerate(screen.maps):
-                        if max_y <= 550:
-                            continue
-                        maps[i][1] -= 30
-                    max_y -= 30
-                    min_y -= 30
+                    scrolling_v -= 600
 
                 elif event.button == 1:
                     screen.render()
+        if scrolling_v != 0:
+            for i, elem in enumerate(screen.maps):
+                if scrolling_v > 0:
+                    if min_y > 100:
+                        scrolling_v = 0
+                        continue
+                if scrolling_v < 0:
+                    if max_y < 530:
+                        scrolling_v = 0
+                        continue
+                maps[i][1] += int(scrolling_v / fps)
+
+            max_y += int(scrolling_v / fps)
+            min_y += int(scrolling_v / fps)
+        if scrolling_v < 0:
+            scrolling_v -= scrolling_a / fps
+            scrolling_v = min(0, scrolling_v)
+        if scrolling_v > 0:
+            scrolling_v += scrolling_a / fps
+            scrolling_v = max(0, scrolling_v)
+
         if transition.get_transition():
             if not transition.background:
                 pygame.image.save(display, 'image/background_for_load.png')
