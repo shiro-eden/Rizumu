@@ -3,7 +3,7 @@ import pygame
 from copy import deepcopy
 
 from Map import import_maps
-from GameParameter import clock, fps
+from GameParameter import clock, fps, fps_menu
 from GameEffects import AnimationTransition, load_image, load_music
 
 from StartMenu import StartMenu  # импорты экранов
@@ -14,23 +14,29 @@ from PauseMenu import PauseMenu
 from ResultScreen import ResultScreen
 from Settings import Settings, load_settings
 
+# загрузка настроек, карт
 settings_values = load_settings()
+maps = import_maps()
+maps.sort(key=lambda x: (x.artist, x.title))
+for i in range(len(maps)):
+    maps[i] = [500, 100 + i * 100, maps[i]]  # преобразование списка карт в кортежи с их координатами на экране
 
 
 def start_menu():
-    pygame.mixer.music.load(load_music('menu_music.wav'))
+    # функция для создания, отрисовки стартового меню
+    pygame.mixer.music.load(load_music('menu_music.wav'))  # загрузка фоновой музыки
     pygame.mixer.music.set_volume(0.1 * int(settings_values['music_volume']))
     pygame.mixer.music.play(-1)
     screen = StartMenu()
     game = True
-    res = -1
-    while not transition.get_transition():
+    res = -1  # переменная, возвращающая состояние экрана
+    while not transition.get_transition():  # отображение перехода между меню
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 return
         transition.render()
         pygame.display.flip()
-        clock.tick(30)
+        clock.tick(fps)
     screen.render()
     while game:
         for event in pygame.event.get():
@@ -38,25 +44,25 @@ def start_menu():
                 game = False
             if event.type == pygame.KEYDOWN:
                 keys = pygame.key.get_pressed()
-                if keys[pygame.K_SPACE] or keys[pygame.K_RETURN]:
+                if keys[pygame.K_SPACE] or keys[pygame.K_RETURN]:  # переход в меню выбора карт
                     screen.result = 1
                     pygame.mixer.music.stop()
 
-        if transition.get_transition():
+        if transition.get_transition():  # отображение перехода между меню
             if not transition.background:
+                # сохранение изображения на экране для быстрой отрисовки
                 pygame.image.save(display, 'image/background_for_load.png')
                 transition.background = load_image('background_for_load.png')
             transition.render()
         else:
             screen.render()
         pygame.display.flip()
-
-        clock.tick(30)
+        clock.tick(fps)
         res = screen.get_result()
         if res != -1:
             game = False
     if res == 1:
-        frame = transition.get_frame()
+        frame = transition.get_frame()  # смена состояния перехода
         if frame != 35 and frame != -1:
             transition.reverse()
         transition.background = None
@@ -64,27 +70,28 @@ def start_menu():
 
 
 def select_map():
-    scrolling_v = 0
-    scrolling_a = -3000
-    maps = import_maps()
+    # функция отрисовки, создания меню выбора карт
+    scrolling_v = 0  # скорость, с которой движутся карты
+    scrolling_a = -10000  # ускорение, с которым движутся карты
+
     screen = SelectMenu(maps)
     max_y = max(screen.maps, key=lambda x: x[1])[1]
     min_y = min(screen.maps, key=lambda x: x[1])[1]
     game = True
     res = -1
-    while not transition.get_transition():
+    while not transition.get_transition():  # отображение перехода
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 return
         transition.render()
         pygame.display.flip()
-        clock.tick(30)
+        clock.tick(fps)
     screen.render()
     while game:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 game = False
-            if event.type == pygame.MOUSEBUTTONDOWN:
+            if event.type == pygame.MOUSEBUTTONDOWN:  # прокрутка меню
                 if event.button == 4:
                     scrolling_v += 600
 
@@ -103,18 +110,19 @@ def select_map():
                     if max_y < 530:
                         scrolling_v = 0
                         continue
-                maps[i][1] += int(scrolling_v / fps)
+                maps[i][1] += int(scrolling_v / fps_menu)  # перемещение карт на экране
 
-            max_y += int(scrolling_v / fps)
-            min_y += int(scrolling_v / fps)
+            max_y += int(scrolling_v / fps_menu)
+            min_y += int(scrolling_v / fps_menu)
+        # изменение скорости движения карт
         if scrolling_v < 0:
-            scrolling_v -= scrolling_a / fps
+            scrolling_v -= scrolling_a / fps_menu
             scrolling_v = min(0, scrolling_v)
         if scrolling_v > 0:
-            scrolling_v += scrolling_a / fps
+            scrolling_v += scrolling_a / fps_menu
             scrolling_v = max(0, scrolling_v)
 
-        if transition.get_transition():
+        if transition.get_transition():  # отображение перехода
             if not transition.background:
                 pygame.image.save(display, 'image/background_for_load.png')
                 transition.background = load_image('background_for_load.png')
@@ -122,27 +130,27 @@ def select_map():
         else:
             screen.render()
         pygame.display.flip()
-        clock.tick(30)
+        clock.tick(fps)
 
         res = screen.get_result()
         if res != -1:
             game = False
-    if res == 1:
+    if res == 1:  # переход в стартовое меню
         frame = transition.get_frame()
         if frame != 35 and frame != -1:
             transition.reverse()
         transition.background = None
         start_menu()
-    elif res == 2:
+    elif res == 2:  # переход в  меню выбора персонажа
         frame = transition.get_frame()
         if frame != 35 and frame != -1:
             transition.reverse()
         transition.background = None
         select_character()
-    elif res == 3:
+    elif res == 3:  # переход к игре
         map = screen.get_map()
         play_map(map)
-    elif res == 4:
+    elif res == 4:  # переход к настройкам
         frame = transition.get_frame()
         if frame != 35 and frame != -1:
             transition.reverse()
@@ -152,21 +160,22 @@ def select_map():
 
 
 def settings():
+    # функция для отрисовки, создания меню настроек
     screen = Settings()
     game = True
-    while not transition.get_transition():
+    while not transition.get_transition():  # отображение перехода
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 return
         transition.render()
         pygame.display.flip()
-        clock.tick(30)
+        clock.tick(fps)
     screen.render()
     while game:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 return
-        if transition.get_transition():
+        if transition.get_transition():  # отображение перехода
             if not transition.background:
                 pygame.image.save(display, 'image/background_for_load.png')
                 transition.background = load_image('background_for_load.png')
@@ -178,7 +187,7 @@ def settings():
         res = screen.get_result()
         if res != -1:
             game = False
-    if res == 0:
+    if res == 0:  # возврат в функцию select_map
         frame = transition.get_frame()
         if frame != 35 and frame != -1:
             transition.reverse()
@@ -187,6 +196,7 @@ def settings():
 
 
 def select_character():
+    # меню выбора персонажа
     screen = CharacterMenu()
 
     game = True
@@ -195,13 +205,13 @@ def select_character():
     pygame.mixer.music.set_volume(0.1 * int(settings_values['music_volume']))
     pygame.mixer.music.play(-1)
 
-    while not transition.get_transition():
+    while not transition.get_transition():  # отображение перехода
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 return
         transition.render()
         pygame.display.flip()
-        clock.tick(30)
+        clock.tick(fps)
 
     screen.render()
     while game:
@@ -211,12 +221,13 @@ def select_character():
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if event.button == 1:
                     x, y = event.pos
+                    # обработка смен персонажа
                     if 200 < x < 300 and 310 < y < 410:
                         screen.switch_chr(-1)
                     elif 820 < x < 920 and 310 < y < 410:
                         screen.switch_chr(1)
 
-        if transition.get_transition():
+        if transition.get_transition():  # отображение перехода
             if not transition.background:
                 pygame.image.save(display, 'image/background_for_load.png')
                 transition.background = load_image('background_for_load.png')
@@ -228,6 +239,7 @@ def select_character():
         if res != -1:
             game = False
     if res == 0:
+        # возвращение к экрану select_map
         frame = transition.get_frame()
         if frame != 35 and frame != -1:
             transition.reverse()
@@ -236,6 +248,7 @@ def select_character():
 
 
 def play_map(map):
+    # экран игрового процесса
     screen = Game(map)
     game = True
     while game:
@@ -243,7 +256,7 @@ def play_map(map):
             if event.type == pygame.QUIT:
                 return
             if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_ESCAPE:
+                if event.key == pygame.K_ESCAPE:  # обработка выхода в меню паузы
                     objects = [(stage_image, key0_image, key1_image),
                                (screen.notes_active, screen.notes_near),
                                (screen.sliders_active, screen.sliders_near, screen.sliders_pressed,
@@ -261,13 +274,14 @@ def play_map(map):
                         transition.background = None
                         return select_map()
                 else:
-                    screen.handle_keys_notes()
+                    screen.handle_keys_notes()  # обработка нажатий на клавиши
         screen.render()
         if screen.end_game():
             game = False
         pygame.display.flip()
         clock.tick(fps)
     transition.background = None
+    # вызов экрана с результатами игры
     result_game(screen.max_combo, screen.score, screen.count_marks, screen.accuracy, map)
 
 
@@ -317,7 +331,7 @@ def result_game(count_combo, score, marks, accuracy, map):
                 return
         transition.render()
         pygame.display.flip()
-        clock.tick(30)
+        clock.tick(fps)
 
     screen.render()
     while game:

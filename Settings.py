@@ -13,8 +13,6 @@ scroll_speed_image = load_image('scroll_speed_text.png')
 confirm_btn_image = [load_image(f'confirm_btn_{i}.png') for i in range(2)]
 
 
-
-
 def load_settings():
     settings = {}
     with open('user_settings.txt') as file:
@@ -82,7 +80,7 @@ class Settings:
 
     def speed_down(self):
         self.scroll_speed -= 5
-        self.scroll_speed = max(0, self.scroll_speed)
+        self.scroll_speed = max(500, self.scroll_speed)
 
     def save_changes(self):
         file = open('user_settings.txt', 'w')
