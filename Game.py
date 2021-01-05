@@ -26,8 +26,8 @@ st_x = 350
 keyboard = [pygame.K_d, pygame.K_f, pygame.K_j, pygame.K_k]
 settings_values = load_settings()
 v = int(settings_values['scroll_speed'])  # px/second
-time_uprise = ((720 - 116) / v * 1000) // 1
 
+time_uprise = ((720 - 130) / v * 1000) // 1
 ability_img = [load_image(f'ability_bar/ability_bar_{i}.png') for i in range(17)]
 
 character_dict = {0: ('flandre/flandre', 3, 700, 300, 10),
@@ -81,7 +81,10 @@ class Slider(pygame.sprite.Sprite):
 class Game:
     def __init__(self, map):
 
-        global v
+        global v, time_uprise
+        settings_values = load_settings()
+        v = int(settings_values['scroll_speed'])  # px/second
+        time_uprise = ((720 - 130) / v * 1000) // 1
         settings_values = load_settings()
         v = int(settings_values['scroll_speed'])  # px/second
         self.map = map[2]

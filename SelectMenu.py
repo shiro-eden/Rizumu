@@ -23,9 +23,7 @@ class SelectMenu:
     def __init__(self, maps):
         settings_values = load_settings()
         self.result = -1
-        maps.sort(key=lambda x: (x.artist, x.title))
-        for i in range(len(maps)):
-            maps[i] = [500, 100 + i * 100, maps[i]]
+
         self.maps = maps
 
         self.exit_btn = Button(-30, 650, 236, 92, '', exit_button_image, self.back)
@@ -64,6 +62,7 @@ class SelectMenu:
         for i in self.records:
             self.records[i] = list(reversed(self.records[i]))
         self.cache = {}
+
     def back(self):
         self.result = 1
 
@@ -108,22 +107,21 @@ class SelectMenu:
                 display.blit(song_background, (x, y))
                 title, artist, creator, version = map.title, map.artist, map.creator, map.version
                 if title in self.cache:
-                    display.blit(self.cache[title], (x+130, y+10))
+                    display.blit(self.cache[title], (x + 130, y + 10))
                 else:
                     self.cache[title] = drawing_text(title, (x + 130, y + 10), font_color=pygame.Color(255, 255, 255),
-                             font_size=20)
+                                                     font_size=20)
                 if artist in self.cache:
-                    display.blit(self.cache[artist], (x+130, y+32))
+                    display.blit(self.cache[artist], (x + 130, y + 32))
                 else:
                     self.cache[artist] = drawing_text(artist, (x + 130, y + 32), font_color=pygame.Color(200, 200, 200),
-                             font_size=15, italic=True)
+                                                      font_size=15, italic=True)
                 if version in self.cache:
-                    display.blit(self.cache[version], (x+130, y +  50))
+                    display.blit(self.cache[version], (x + 130, y + 50))
                 else:
-                    self.cache[version] = drawing_text(version, (x + 130, y + 50), font_color=pygame.Color(255, 255, 255),
-                             font_size=23)
-
-
+                    self.cache[version] = drawing_text(version, (x + 130, y + 50),
+                                                       font_color=pygame.Color(255, 255, 255),
+                                                       font_size=23)
 
         display.blit(menu_back_plus, (0, 620))
         display.blit(menu_plus, (0, 0))
