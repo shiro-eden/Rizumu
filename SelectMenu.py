@@ -1,12 +1,12 @@
 import pygame
 import sqlite3
-from GameParameter import display
+from GameParameter import display, fps
 from Button import Button
 from GameEffects import drawing_text, load_image, load_fonts
 from Settings import load_settings
 
 exit_button_image = [load_image(f'menu_back_{i}.png') for i in range(2)]
-chr_button_image = [load_image(f'chr_button_{i}.png') for i in range(4)]
+chr_button_image = [load_image(f'chr_button_{i}.png') for i in range(2)]
 play_button_image = (load_image('play_button_0.png'),
                      load_image('play_button_1.png'))
 settings_button_image = [load_image(f'settings_button_{i}.png') for i in range(2)]
@@ -17,7 +17,9 @@ menu_plus = load_image('menu+.png')
 back_mask = load_image('back_mask.png')
 records_rect = load_image('record_rect.png')
 settings_values = load_settings()
-
+glow_left = load_image('glow_left.png')
+glow_right = load_image('glow_right.png')
+shift_v= 300
 
 class SelectMenu:
     def __init__(self, maps):
@@ -26,13 +28,13 @@ class SelectMenu:
 
         self.maps = maps
 
-        self.exit_btn = Button(-30, 650, 236, 92, '', exit_button_image, self.back)
+        self.exit_btn = Button(-30, 615, 222, 92, '', exit_button_image, self.back, glow=glow_left)
 
-        self.chr_btn = Button(-30, -30, 223, 92, '', chr_button_image, self.chr_menu)
+        self.chr_btn = Button(-30, -30, 223, 92, '', chr_button_image, self.chr_menu, glow=glow_left)
 
-        self.play_btn = Button(908, 650, 222, 92, '', play_button_image, self.start_game)
+        self.play_btn = Button(908, 650, 222, 92, '', play_button_image, self.start_game, glow=glow_right)
 
-        self.settings_btn = Button(908, 0, 223, 92, '', settings_button_image, self.open_settings)
+        self.settings_btn = Button(908, 0, 223, 92, '', settings_button_image, self.open_settings, glow=glow_right)
         self.active_map = 0
         self.maps[0][0] -= 30
         self.menu_background = self.maps[self.active_map][2].background
@@ -90,6 +92,9 @@ class SelectMenu:
             x, y, map = elem
             if 1020 >= y >= -60:
                 if 500 <= mouse[0] and y <= mouse[1] <= y + 80 and mouse[1] <= 720 - 96:
+                    self.maps[i][0] -= shift_v / fps
+                    self.maps[i][0] = min(self.maps[i][0], 500)
+                    self.maps[i][0] = max(470, self.maps[i][0])
                     display.blit(song_rect_active, (x, y))
                     if click[0]:
                         self.maps[self.active_map][0] += 30
@@ -97,11 +102,17 @@ class SelectMenu:
                         map = self.maps[self.active_map][2]
                         self.menu_background = map.background
                         self.maps[i][0] -= 30
-
+                        self.maps[i][0] = min(self.maps[i][0], 500)
+                        self.maps[i][0] = max(470, self.maps[i][0])
                         pygame.mixer.music.load(f'maps/{map.dir}/{map.general["AudioFilename"]}')
                         pygame.mixer.music.set_volume(0.1 * int(settings_values['music_volume']))
                         pygame.mixer.music.play(-1)
+
                 else:
+                    if i != self.active_map:
+                        self.maps[i][0] += shift_v / fps
+                    self.maps[i][0] = min(self.maps[i][0], 500)
+                    self.maps[i][0] = max(470, self.maps[i][0])
                     display.blit(song_rect, (x, y))
                 song_background = map.small_background
                 display.blit(song_background, (x, y))

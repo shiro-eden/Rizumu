@@ -55,7 +55,7 @@ class CharacterMenu:
 
         self.left_button = Button(200, 310, 100, 100, '', left_button_image)
         self.right_button = Button(820, 310, 100, 100, '', right_button_image)
-        self.exit_btn = Button(-30, 640, 236, 92, '', exit_button_image, self.back)
+        self.exit_btn = Button(-30, 615, 236, 92, '', exit_button_image, self.back)
         self.confirm_btn = Button(1037, 640, 86, 86, '', confirm_button_image, self.confirm_chr)
 
     def render(self):

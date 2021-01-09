@@ -31,7 +31,7 @@ def load_settings():
 class Settings:
     def __init__(self):
         self.values = load_settings()
-        self.exit_btn = Button(-30, 650, 236, 92, '', exit_button_image, self.back)
+        self.exit_btn = Button(-30, 615, 236, 92, '', exit_button_image, self.back)
         self.result = -1
         self.music_volume = int(self.values['music_volume'])
         self.scroll_speed = int(self.values['scroll_speed'])
