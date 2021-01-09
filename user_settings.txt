@@ -1,3 +1,3 @@
-scroll_speed:0
+scroll_speed:555
 music_volume:1
 character:3
