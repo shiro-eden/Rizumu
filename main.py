@@ -2,11 +2,13 @@ import pygame
 
 from copy import deepcopy
 
+# импорты функций и констант
 from Map import import_maps
 from GameParameter import clock, fps, fps_menu
 from GameEffects import AnimationTransition, load_image, load_music
 
-from StartMenu import StartMenu  # импорты экранов
+# импорты экранов
+from StartMenu import StartMenu
 from SelectMenu import SelectMenu
 from CharacterMenu import CharacterMenu
 from Game import Game, stage_image, key0_image, key1_image
@@ -14,22 +16,22 @@ from PauseMenu import PauseMenu
 from ResultScreen import ResultScreen
 from Settings import Settings, load_settings
 
-# загрузка настроек, карт
-settings_values = load_settings()
+
+settings_values = load_settings()  # загрузка настроек, карт
 maps = import_maps()
 maps.sort(key=lambda x: (x.artist, x.title))
-for i in range(len(maps)):
-    maps[i] = [500, 100 + i * 100, maps[i]]  # преобразование списка карт в кортежи с их координатами на экране
+for i in range(len(maps)):  # преобразование списка карт в кортежи с их координатами на экране
+    maps[i] = [500, 100 + i * 100, maps[i]]
 
 
 def start_menu():
     # функция для создания, отрисовки стартового меню
-    pygame.mixer.music.load(load_music('menu_music.wav'))  # загрузка фоновой музыки
+    pygame.mixer.music.load(load_music('menu_music.mp3'))  # загрузка фоновой музыки
     pygame.mixer.music.set_volume(0.1 * int(settings_values['music_volume']))
     pygame.mixer.music.play(-1)
     screen = StartMenu()
     game = True
-    res = -1  # переменная, возвращающая состояние экрана
+    res = -1  # переменная, хранящая состояние экрана
     while not transition.get_transition():  # отображение перехода между меню
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -58,7 +60,7 @@ def start_menu():
             screen.render()
         pygame.display.flip()
         clock.tick(fps)
-        res = screen.get_result()
+        res = screen.get_result()  # отслеживание состояния экрана
         if res != -1:
             game = False
     if res == 1:
@@ -141,7 +143,7 @@ def select_map():
             transition.reverse()
         transition.background = None
         start_menu()
-    elif res == 2:  # переход в  меню выбора персонажа
+    elif res == 2:  # переход в меню выбора персонажа
         frame = transition.get_frame()
         if frame != 35 and frame != -1:
             transition.reverse()
@@ -198,13 +200,8 @@ def settings():
 def select_character():
     # меню выбора персонажа
     screen = CharacterMenu()
-
     game = True
     res = -1
-    pygame.mixer.music.load(load_music('menu_music.wav'))
-    pygame.mixer.music.set_volume(0.1 * int(settings_values['music_volume']))
-    pygame.mixer.music.play(-1)
-
     while not transition.get_transition():  # отображение перехода
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -250,6 +247,7 @@ def select_character():
 def play_map(map):
     # экран игрового процесса
     screen = Game(map)
+    # screen = Game(map)
     game = True
     while game:
         for event in pygame.event.get():
@@ -363,7 +361,7 @@ def result_game(count_combo, score, marks, accuracy, map):
 if __name__ == '__main__':
     pygame.init()
     pygame.display.set_caption('リズム')
-    transition = AnimationTransition()
+    transition = AnimationTransition()  # загрузка анимации перехода меджу экранами
     size = width, height = 1120, 720
     display = pygame.display.set_mode(size)
     start_menu()
