@@ -41,7 +41,7 @@ ability_dict = {0: ('flandre/flandre_ability', 6, 600, 300, 10, True),
                 3: ('remilia/remilia_ability', 16, 600, 300, 10, True)}
 
 
-class Note(pygame.sprite.Sprite):
+class Note(pygame.sprite.Sprite):  # класс ноты
     def __init__(self, column):
         super().__init__()
         self.column = column
@@ -54,10 +54,10 @@ class Note(pygame.sprite.Sprite):
         self.rect.y = 0
 
     def update(self):
-        self.rect.y += math.ceil(v / fps)
+        self.rect.y += math.ceil(v / fps)  # перемещение ноты вниз
 
 
-class Slider(pygame.sprite.Sprite):
+class Slider(pygame.sprite.Sprite):  # класс слайдера
     def __init__(self, column, start, finish):
         super().__init__()
         self.column = column
@@ -65,28 +65,27 @@ class Slider(pygame.sprite.Sprite):
             note_image = note0s_image
         else:
             note_image = note1s_image
-        self.h = math.floor((finish - start) * v / 1000)
+        self.h = math.floor((finish - start) * v / 1000)  # задание высоты слайдера
         self.image = pygame.Surface((43, self.h))
         self.rect = self.image.get_rect(x=st_x + 30 + 45 * column, y=-self.h)
-        for i in range(math.floor(self.h // 14)):
+        for i in range(math.floor(self.h // 14)):  # генерация изображения слайдера
             self.image.blit(note_image, (0, i * 14))
         ost = int(self.h % 14)
         note_image = pygame.transform.scale(note_image, (43, ost))
         self.image.blit(note_image, (0, self.h - ost))
 
     def update(self):
-        self.rect.y += math.ceil(v / fps)
+        self.rect.y += math.ceil(v / fps)  # перемещение слайдера вниз
 
 
 class Game:
     def __init__(self, map):
 
         global v, time_uprise
+
         settings_values = load_settings()
-        v = 1000  # px/second
-        time_uprise = ((720 - 130) / v * 1000) // 1
-        settings_values = load_settings()
-        v = 1000  # px/second
+        v = int(settings_values['scroll_speed'])
+        time_uprise = ((720 - 100) / v * 1000) // 1
         self.map = map[2]
         self.score = 0
         self.accuracy = 100
@@ -94,17 +93,18 @@ class Game:
         self.combo = 0
 
         od = float(self.map.OD)
+        # время, за которое нужно нажать на ноту для какой-то оценки
         self.od_max = 16.5
         self.od_300 = (64 - (od * 3)) + 0.5
         self.od_200 = (97 - (od * 3)) + 0.5
         self.od_100 = (127 - (od * 3)) + 0.5
         self.od_50 = (151 - (od * 3)) + 0.5
-        self.time = pygame.time.get_ticks()
+
         self.marks = []
         self.count_marks = {0: 0, 50: 0, 100: 0, 200: 0, 300: 0, 301: 0}
 
-        self.notes_near = []
-        self.notes_active = []
+        self.notes_near = []  # ноты, на которые если нажать, за них выдастся оценка
+        self.notes_active = []  # ноты, находящиеся на поле
         self.notes = [i.copy() for i in self.map.objects if i[2] == 1]
         for i in range(len(self.notes)):
             self.notes[i].append(self.notes[i][1])
@@ -113,11 +113,11 @@ class Game:
         self.notes.sort(key=lambda x: x[1], reverse=True)
         while self.notes[-1][1] <= 0:
             self.notes.pop()
-        self.sliders_active = []
-        self.sliders_near = []
-        self.sliders_pressed = [-1, -1, -1, -1]
-        self.sliders_pressed_ms = [-1, -1, -1, -1]
-        self.sliders_failed = []
+        self.sliders_active = []  # слайдеры на экране
+        self.sliders_near = []  # слайдеры, на которые если нажать, за них выдастся оценка
+        self.sliders_pressed = [-1, -1, -1, -1]  # нажатый слайдер для каждой колонки
+        self.sliders_pressed_ms = [-1, -1, -1, -1]  # время нажатия слайдера для каждой колонки
+        self.sliders_failed = []  # пропущенные слайдеры
         self.sliders = [i.copy() for i in self.map.objects if i[2] == 128]
         for i in range(len(self.sliders)):
             self.sliders[i].append(self.sliders[i][1])
@@ -127,7 +127,7 @@ class Game:
         self.map.background.set_alpha(100)
         while self.sliders[-1][1] < 0:
             self.sliders.pop()
-        self.end_time = max((self.notes[0][4], self.sliders[0][3])) + 1500
+        self.end_time = max((self.notes[0][4], self.sliders[0][3])) + 1500  # время завершения карты
         display.fill((0, 0, 0))
         display.blit(self.map.background, (0, 0))
 
@@ -135,6 +135,7 @@ class Game:
         pygame.mixer.music.set_volume(0.1 * int(settings_values['music_volume']))
         pygame.mixer.music.play(1)
 
+        # вспомогательные элементы для быстрой отрисовки текста во время игры
         score_surface = self.map.background.subsurface((670, 30, 290, 50))
         self.score_surface = pygame.surface.Surface((290, 50))
         self.score_surface.fill((0, 0, 0))
@@ -172,6 +173,7 @@ class Game:
             self.character_ability = AnimatedSprite(*ability_dict[self.character])
 
         self.lightnings = [-1, -1, -1, -1]
+        self.time = pygame.time.get_ticks()  # время начала игры
 
     def render(self):
         global aby_frame
@@ -179,7 +181,7 @@ class Game:
         display.fill((0, 0, 0), (st_x + 30, 0, 45 * 4, 720))
         display.blit(stage_image, (st_x, 0))
         keys = pygame.key.get_pressed()
-        for key in range(4):
+        for key in range(4):  # отрисовка света от клавиш
             if keys[keyboard[key]]:
                 display.blit(stage_light_image, (st_x + 30 + 45 * key, 617 - 737))
         if self.notes or self.notes_near or self.notes_active:
@@ -207,7 +209,7 @@ class Game:
                 self.character_ability.update()
         else:
             self.character_stand.update()
-
+        # отрисовка клавиш
         if keys[pygame.K_d]:
             display.blit(key0d_image, (st_x + 30, 617))
         else:
@@ -237,15 +239,18 @@ class Game:
                     st_x + 30 + 45 * key + 45 // 2 - lightning.get_width() // 2,
                     617 - lightning.get_height() // 2))
 
-    def update_sliders(self):
+    def update_sliders(self):  # обновление слайдеров
         time = self.time_now
         if self.sliders:
+            # удаление последнего слайдера и добавление его в массив с активными,
+            # если его время выходить на экран
             while abs(self.sliders[-1][1] - time) <= 1000 / fps:
                 k = self.sliders.pop()
                 self.sliders_active.append((Slider(k[0], k[4], k[3]), k))
                 if not self.sliders:
                     break
         for i in range(len(self.sliders_failed) - 1, -1, -1):
+            # обработка пропущенных слайдеров
             sprite, slider = self.sliders_failed[i]
             display.blit(sprite.image, sprite.rect)
             sprite.update()
@@ -253,11 +258,13 @@ class Game:
                 self.sliders_failed.pop(i)
 
         for i in range(len(self.sliders_pressed) - 1, -1, -1):
+            # обработка нажатых слайдеров
             if self.sliders_pressed[i] != -1:
                 sprite, slider = self.sliders_pressed[i]
                 display.blit(sprite.image, sprite.rect)
                 sprite.update()
         for i in range(len(self.sliders_near) - 1, -1, -1):
+            # обработка слайдеров рядом с клавишами
             sprite, slider = self.sliders_near[i]
             display.blit(sprite.image, sprite.rect)
             sprite.update()
@@ -265,15 +272,17 @@ class Game:
                 self.marks.append([0, 0])
                 self.sliders_failed.append(self.sliders_near.pop(i))
         for i in range(len(self.sliders_active) - 1, -1, -1):
+            # обработка слайдеров на экране
             sprite, slider = self.sliders_active[i]
             display.blit(sprite.image, sprite.rect)
             sprite.update()
             if slider[-1] - time <= self.od_50:
                 self.sliders_near.append(self.sliders_active.pop(i))
 
-    def update_notes(self):
+    def update_notes(self):  # обновление нот
         time = self.time_now
         if self.notes:
+            # добавление нот в ноты на экране, если они подходят по времени
             while abs(self.notes[-1][1] - time) <= 1000 / fps:
                 k = self.notes.pop()
                 self.notes_active.append((Note(k[0]), k))
@@ -281,6 +290,7 @@ class Game:
                     break
 
         for i in range(len(self.notes_near) - 1, -1, -1):
+            # обработка нот рядом с клавишами
             sprite, note = self.notes_near[i]
             display.blit(sprite.image, sprite.rect)
             sprite.update()
@@ -289,13 +299,14 @@ class Game:
                 self.notes_near.pop(i)
 
         for i in range(len(self.notes_active) - 1, -1, -1):
+            # обработка нот на экране
             sprite, note = self.notes_active[i]
             display.blit(sprite.image, sprite.rect)
             sprite.update()
             if note[-1] - time <= self.od_50:
                 self.notes_near.append(self.notes_active.pop(i))
 
-    def handle_keys_sliders(self):
+    def handle_keys_sliders(self):  # обработка нажатия на клавиши для слайдеров
         time = (pygame.time.get_ticks() - self.time)
         keys = pygame.key.get_pressed()
         for key in range(4):
@@ -303,24 +314,26 @@ class Game:
                 if self.sliders_pressed[key] == -1:
                     slider_index = -1
                     c = 1e10
-                    for i in range(len(self.sliders_near)):
+                    for i in range(len(self.sliders_near)):  # обработка еще не нажатых слайдеров
                         sprite, c_slider = self.sliders_near[i]
                         if c_slider[0] == key and c_slider[-1] <= c:
                             slider_index = i
                             c = c_slider[-1]
-                    if slider_index != -1:
+                    if slider_index != -1:  # обработка отпускания слайдера
                         sprite, slider = self.sliders_near[slider_index]
                         ms = abs(time - slider[-1])
                         self.sliders_pressed_ms[key] = ms
                         self.sliders_pressed[key] = (self.sliders_near[slider_index])
                         self.sliders_near.pop(slider_index)
                 else:
+                    # обработка пропусак слайдера
                     sprite, slider = self.sliders_pressed[key]
                     if time > slider[-2] + self.od_50:
                         self.sliders_pressed[key] = -1
                         self.marks.append([0, 0])
             else:
                 if self.sliders_pressed[key] != -1:
+
                     sprite, slider = self.sliders_pressed[key]
                     ms = abs(time - slider[-2])
                     ms1 = self.sliders_pressed_ms[key]
@@ -342,19 +355,20 @@ class Game:
                     self.sliders_pressed[key] = -1
                     self.sliders_pressed_ms[key] = -1
 
-    def handle_keys_notes(self):
+    def handle_keys_notes(self):  # обработка нажатий на клавиши для нот
         keys = pygame.key.get_pressed()
         time = (pygame.time.get_ticks() - self.time)
         for key in range(4):
             if keys[keyboard[key]]:
                 note_index = -1
                 c = 1e10
-                for i in range(len(self.notes_near)):
+                for i in range(len(self.notes_near)):  # получение самой близкой ноты
                     sprite, c_note = self.notes_near[i]
                     if c_note[0] == key and c_note[-1] <= c:
                         note_index = i
                         c = c_note[-1]
                 if note_index != -1:
+                    # обработка нажатия на последнюю ноту, выдача оценки
                     sprite, note = self.notes_near[note_index]
                     self.notes_near.pop(note_index)
                     ms = abs(note[-1] - time)
@@ -371,7 +385,7 @@ class Game:
                         self.marks.append([301, 0])
                     self.lightnings[key] = 255
 
-    def show_marks(self):
+    def show_marks(self):  # обработка полученных оценок
         flag = False
         for i, elem in enumerate(self.marks):
             mark, time = elem
@@ -415,7 +429,7 @@ class Game:
                     self.score += 19 * self.coefficient
             flag = True
 
-    def show_points(self):
+    def show_points(self):  # отображение текста
         sum_marks = sum(self.count_marks.values())
         if sum_marks != 0:
             self.accuracy = (self.score - 20 * self.count_marks[301]) / (sum_marks * 300) * 100
@@ -434,6 +448,7 @@ class Game:
         display.blit(self.combo_surface, (670, 150))
         drawing_text(str(self.combo) + 'x', (670, 160), pygame.Color('white'), font_size=40,
                      font_type='corp_round_v1.ttf')
+        # отрисовка персонажа
         if self.character == 0 or self.character == 1 or self.character == 3:
             if self.activate_ability:
                 self.ability_score += 50
@@ -475,7 +490,7 @@ class Game:
             self.notes_active.pop(i)
             self.marks.append([200, 0])
 
-    def end_game(self):
+    def end_game(self):  # проверка окончания игры
         return self.time_now > self.end_time
 
     def pause_music(self):

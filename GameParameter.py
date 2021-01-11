@@ -1,5 +1,5 @@
+# файл с основными параметрами игры
 import pygame
-
 
 size = width, height = 1120, 720
 display = pygame.display.set_mode(size)

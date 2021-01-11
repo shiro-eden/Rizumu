@@ -4,10 +4,10 @@ import sys
 from GameParameter import display, clock
 
 
-def load_fonts(font_type):
+def load_fonts(font_type):  # загрузка шрифта
     font_type = "fonts/" + font_type
     if not font_type.endswith('.ttf'):
-        print(f"Файл '{fullname}' не пдходит по формату")
+        print(f"Файл '{font_type}' не пдходит по формату")
         sys.exit()
     if not os.path.isfile(font_type):
         font_type = None
@@ -17,12 +17,12 @@ def load_fonts(font_type):
 fonts = {'corp_round_v1.ttf': load_fonts('corp_round_v1.ttf'),
          'martfutomaru.ttf': load_fonts('martfutomaru.ttf'),
          'rizumu.ttf': load_fonts('rizumu.ttf'),
-          None: None}
-
+         None: None}
 
 
 def drawing_text(text, cords, font_color=pygame.Color('black'), font_size=30,
                  font_type='rizumu.ttf', bold=False, italic=False):
+    # функция для отрисовки текста, также возвращает surface с текстом
     font_type = pygame.font.Font(fonts[font_type], font_size)
     font_type.set_bold(bold)
     font_type.set_italic(italic)
@@ -30,7 +30,8 @@ def drawing_text(text, cords, font_color=pygame.Color('black'), font_size=30,
     display.blit(text, cords)
     return text
 
-def load_image(filename):
+
+def load_image(filename):  # функция загрузки изображений
     fullname = "image/" + filename
     if not fullname.endswith('.png') and not fullname.endswith('.jpg'):
         print(f"Файл '{fullname}' не пдходит по формату")
@@ -42,7 +43,7 @@ def load_image(filename):
     return image
 
 
-def load_music(filename):
+def load_music(filename):  # функция загрузки музыки
     fullname = "music/" + filename
     if not fullname.endswith('.wav') and not fullname.endswith('.mp3'):
         print(f"Файл '{fullname}' не пдходит по формату")
@@ -53,13 +54,13 @@ def load_music(filename):
     return fullname
 
 
-class AnimationTransition:
+class AnimationTransition:  # класс для перехода между экранами
 
     transition_img = [load_image(f'transition/frame_transition_{i}.png') for i in range(36)]
 
     def __init__(self):
         self.transition_back = False
-        self.frame = -1
+        self.frame = -1  # текущий кадр
         self.background = None
 
     def get_frame(self):
@@ -69,6 +70,7 @@ class AnimationTransition:
         return self.transition_back
 
     def reverse(self):
+        # смена направления перехода
         self.transition_back = not self.transition_back
 
     def render(self):  # анимация перехода между экранами
@@ -88,7 +90,7 @@ class AnimationTransition:
         display.blit(img, (0, 0))
 
 
-class AnimatedSprite(pygame.sprite.Sprite):
+class AnimatedSprite(pygame.sprite.Sprite):  # класс анимированного спрайта
     def __init__(self, name, count_img, x, y, update_frame, reverse=False):
         super().__init__()
         self.frames = [load_image(f'{name}_{i}.png') for i in range(count_img)]

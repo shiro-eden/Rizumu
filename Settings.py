@@ -13,7 +13,7 @@ scroll_speed_image = load_image('scroll_speed_text.png')
 confirm_btn_image = [load_image(f'confirm_btn_{i}.png') for i in range(2)]
 
 
-def load_settings():
+def load_settings():  # функция для загрузки настроек
     settings = {}
     with open('user_settings.txt') as file:
         for elem in file:
@@ -28,7 +28,7 @@ def load_settings():
     return settings
 
 
-class Settings:
+class Settings:  # класс меню настроек
     def __init__(self):
         self.values = load_settings()
         self.exit_btn = Button(-30, 615, 236, 92, '', exit_button_image, self.back)
@@ -41,7 +41,7 @@ class Settings:
         self.speed_down_btn = Button(960, 300, 100, 50, '', changer_btn_down_image, self.speed_down)
         self.confrim_btn = Button(908, 650, 222, 92, '', confirm_btn_image, self.save_changes)
 
-    def render(self):
+    def render(self):  # отрисовка кнопок, текста
         display.blit(background, (0, 0))
         self.exit_btn.draw(0, 0)
         self.volume_up_btn.draw(0, 0)
@@ -53,7 +53,7 @@ class Settings:
         self.speed_up_btn.draw(0, 0)
         self.speed_down_btn.draw(0, 0)
         display.blit(scroll_speed_image, (60, 260))
-        drawing_text(str(self.scroll_speed) + ' px', (680, 270), font_color=(255, 255, 255), font_size=72,
+        drawing_text(str(self.scroll_speed) + ' px/sec', (580, 270), font_color=(255, 255, 255), font_size=60,
                      font_type='corp_round_v1.ttf')
 
         self.confrim_btn.draw(0, 0)
@@ -64,6 +64,7 @@ class Settings:
     def get_result(self):
         return self.result
 
+    # изменение громкости
     def volume_up(self):
         self.music_volume += 1
         self.music_volume = min(100, self.music_volume)
@@ -74,15 +75,16 @@ class Settings:
         self.music_volume = max(0, self.music_volume)
         pygame.mixer.music.set_volume(0.1 * self.music_volume)
 
+    # изменение скорости прокрутки
     def speed_up(self):
         self.scroll_speed += 5
-        self.scroll_speed = min(2000, self.scroll_speed)
+        self.scroll_speed = min(1300, self.scroll_speed)
 
     def speed_down(self):
         self.scroll_speed -= 5
         self.scroll_speed = max(500, self.scroll_speed)
 
-    def save_changes(self):
+    def save_changes(self):  # сохранение изменений в текстовый файл
         file = open('user_settings.txt', 'w')
         print('scroll_speed:', self.scroll_speed, sep='', file=file)
         print('music_volume:', self.music_volume, sep='', file=file)

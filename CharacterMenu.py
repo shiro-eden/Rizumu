@@ -40,7 +40,7 @@ menu_background = [load_image('menu_background.png'),
                    load_image('menu+.png')]
 
 
-class CharacterMenu:
+class CharacterMenu:  # класс меню выбора персонажа
     def __init__(self):
         self.result = -1
 

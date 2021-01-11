@@ -4,6 +4,7 @@ from GameEffects import drawing_text, load_image
 from Button import Button
 import sqlite3
 import datetime as dt
+
 background = load_image('result_background.png')
 
 back_button_image = [load_image(f'pause_back_{i}.png') for i in range(2)]
@@ -46,12 +47,13 @@ class ResultScreen:
         mapset_id = map[2].mapset_id
         time = str(dt.datetime.now().time()).split('.')[0]
         date = str(dt.datetime.now().date())
-        print(time,date)
+        print(time, date)
         con = sqlite3.connect('records.db')
         cur = con.cursor()
         cur.execute(
             f"INSERT INTO Records(map_id, mapset_id, score, accuracy, combo, date, time) VALUES({map_id}, {mapset_id}, {score}, {accuracy}, {count_combo}, '{date}', '{time}')")
         con.commit()
+
     def render(self):
         display.blit(background, (0, 0))
         display.blit(self.rank, (775, 110))

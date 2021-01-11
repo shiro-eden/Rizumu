@@ -5,7 +5,8 @@ from GameEffects import drawing_text
 pygame.init()
 glow_v = 1000
 
-class Button:
+
+class Button:  # класс для кнопок
     def __init__(self, x, y, width, height, text, image, func=None, glow=None):
         self.x = x
         self.y = y
@@ -20,6 +21,7 @@ class Button:
         self.glow = glow
         if self.glow:
             self.glow.set_alpha(self.glow_transparency)
+
     def draw(self, x, y, size=32):
         mouse = pygame.mouse.get_pos()
         click = pygame.mouse.get_pressed()
