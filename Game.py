@@ -85,7 +85,7 @@ class Game:
 
         settings_values = load_settings()
         v = int(settings_values['scroll_speed'])
-        time_uprise = ((720 - 100) / v * 1000) // 1
+        time_uprise = ((720 - 95) / v * 1000) // 1
         self.map = map[2]
         self.score = 0
         self.accuracy = 100
@@ -94,11 +94,11 @@ class Game:
 
         od = float(self.map.OD)
         # время, за которое нужно нажать на ноту для какой-то оценки
-        self.od_max = 16.5
-        self.od_300 = (64 - (od * 3)) + 0.5
-        self.od_200 = (97 - (od * 3)) + 0.5
-        self.od_100 = (127 - (od * 3)) + 0.5
-        self.od_50 = (151 - (od * 3)) + 0.5
+        self.od_max = 16.5 * 2
+        self.od_300 = (64 - (od * 3)) * 2
+        self.od_200 = (97 - (od * 3)) * 2
+        self.od_100 = (127 - (od * 3)) * 2
+        self.od_50 = (151 - (od * 3)) * 2
 
         self.marks = []
         self.count_marks = {0: 0, 50: 0, 100: 0, 200: 0, 300: 0, 301: 0}
