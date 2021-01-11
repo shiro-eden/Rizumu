@@ -19,7 +19,8 @@ records_rect = load_image('record_rect.png')
 settings_values = load_settings()
 glow_left = load_image('glow_left.png')
 glow_right = load_image('glow_right.png')
-shift_v= 300
+shift_v = 300
+
 
 class SelectMenu:
     def __init__(self, maps):
@@ -27,7 +28,7 @@ class SelectMenu:
         self.result = -1
 
         self.maps = maps
-
+        # создание кнопок
         self.exit_btn = Button(-30, 615, 222, 92, '', exit_button_image, self.back, glow=glow_left)
 
         self.chr_btn = Button(-30, -30, 223, 92, '', chr_button_image, self.chr_menu, glow=glow_left)
@@ -38,17 +39,20 @@ class SelectMenu:
         self.active_map = 0
         self.maps[0][0] -= 30
         self.menu_background = self.maps[self.active_map][2].background
-
+        # загрузка аудиофайла
         map = f'maps/{self.maps[0][2].dir}/{self.maps[0][2].general["AudioFilename"]}'
         pygame.mixer.music.load(map)
         pygame.mixer.music.set_volume(0.1 * int(settings_values['music_volume']))
         pygame.mixer.music.play(-1)
 
+        # загрузка рекордов для всех карт
         self.records = {}
         con = sqlite3.connect('records.db')
         cur = con.cursor()
         result = cur.execute("SELECT * FROM Records")
         for elem in result:
+            # преобразование элементов словаря с рекордами
+            # из текста в изображения с текстом
             elem = list(elem)
             elem[6] = 'Сыграно ' + elem[6] + ', ' + elem[7]
             elem[3] = 'Score: ' + str(elem[3])
@@ -63,7 +67,7 @@ class SelectMenu:
                 self.records[elem[1]] = [elem]
         for i in self.records:
             self.records[i] = list(reversed(self.records[i]))
-        self.cache = {}
+        self.cache = {}  # кеш для быстрой отрисовки текста
 
     def back(self):
         self.result = 1
@@ -90,13 +94,16 @@ class SelectMenu:
         display.blit(back_mask, (0, 0))
         for i, elem in enumerate(self.maps):
             x, y, map = elem
-            if 1020 >= y >= -60:
+            if 1020 >= y >= -60:  # отрисовка карты на экране
                 if 500 <= mouse[0] and y <= mouse[1] <= y + 80 and mouse[1] <= 720 - 96:
+                    # отрисовка, если на карту наведен курсор
+                    # сдвиг прямоугольника карты влево
                     self.maps[i][0] -= shift_v / fps
                     self.maps[i][0] = min(self.maps[i][0], 500)
                     self.maps[i][0] = max(470, self.maps[i][0])
                     display.blit(song_rect_active, (x, y))
-                    if click[0]:
+                    if click[0]:  # если курсор нажали
+                        # смена активной карты
                         self.maps[self.active_map][0] += 30
                         self.active_map = i
                         map = self.maps[self.active_map][2]
@@ -109,7 +116,8 @@ class SelectMenu:
                         pygame.mixer.music.play(-1)
 
                 else:
-                    if i != self.active_map:
+                    # отрисовка карты если курсор на нее не наведен
+                    if i != self.active_map:  # сдвиг карты влево
                         self.maps[i][0] += shift_v / fps
                     self.maps[i][0] = min(self.maps[i][0], 500)
                     self.maps[i][0] = max(470, self.maps[i][0])
@@ -117,6 +125,7 @@ class SelectMenu:
                 song_background = map.small_background
                 display.blit(song_background, (x, y))
                 title, artist, creator, version = map.title, map.artist, map.creator, map.version
+                # отрисовка текста об карте с сохранением изображений текста
                 if title in self.cache:
                     display.blit(self.cache[title], (x + 130, y + 10))
                 else:
@@ -133,7 +142,7 @@ class SelectMenu:
                     self.cache[version] = drawing_text(version, (x + 130, y + 50),
                                                        font_color=pygame.Color(255, 255, 255),
                                                        font_size=23)
-
+        # отрисовка кнопок, полосок меню
         display.blit(menu_back_plus, (0, 620))
         display.blit(menu_plus, (0, 0))
         self.play_btn.draw(0, 0)
@@ -141,14 +150,14 @@ class SelectMenu:
         self.play_btn.draw(0, 0)
         self.chr_btn.draw(0, 0)
         self.settings_btn.draw(0, 0)
-
+        # удаление из словаря с рекордами рекорда, если для какой-то карты их больше 6
         if int(self.maps[self.active_map][2].map_id) in self.records:
             while len(self.records[int(self.maps[self.active_map][2].map_id)]) > 6:
                 self.records[int(self.maps[self.active_map][2].map_id)].pop()
             records = self.records[int(self.maps[self.active_map][2].map_id)]
         else:
             records = []
-        for y, elem in enumerate(records):
+        for y, elem in enumerate(records):  # отрисовка рекорда
             elem_id, map_id, mapset_id, score, accuracy, combo, date, time = elem
             y *= 90
             y += 100

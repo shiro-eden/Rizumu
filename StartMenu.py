@@ -3,9 +3,8 @@ from GameParameter import display
 from Button import Button
 from GameEffects import drawing_text, load_image
 
-
 exit_button_image = (load_image('exit_button.png'),
-                    load_image('exit_button_active.png'))
+                     load_image('exit_button_active.png'))
 
 background_image = load_image('menu_background.png')
 
@@ -14,7 +13,7 @@ equalizer_image = [load_image(f'equalizer/equalizer_{i}.png') for i in range(12)
 rizumu_image = load_image('rizumu.png')
 
 
-class StartMenu:
+class StartMenu:  # класс стартового меню
     def __init__(self):
         self.result = -1
 

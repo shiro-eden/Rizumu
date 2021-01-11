@@ -54,7 +54,7 @@ menu_background = [load_image('menu_background.png'),
 settings_values = load_settings()
 
 
-class CharacterMenu:
+class CharacterMenu:  # класс меню выбора персонажа
     def __init__(self):
         self.result = -1  # переменная для отслеживания состояния экрана
 

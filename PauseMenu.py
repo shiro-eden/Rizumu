@@ -3,7 +3,6 @@ from GameParameter import display
 from GameEffects import load_image
 from Button import Button
 
-
 st_x = 400
 
 background_image = load_image('pause_background.png')
@@ -32,7 +31,6 @@ class PauseMenu:
         self.restart_btn = Button(455, 350, 238, 72, '', restart_button_image, self.restart)
 
         self.back_btn = Button(455, 500, 238, 72, '', back_button_image, self.back)
-
 
     def get_result(self):
         return self.result

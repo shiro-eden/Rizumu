@@ -4,8 +4,9 @@ import pygame
 maps = []
 
 
-class Map():
+class Map():  # класс карты
     def __init__(self, foldername, filename):
+        # загрузка информации о карте из файла .osu
         file = open(f'maps\\{foldername}\\{filename}', encoding="utf-8").read().split('\n')
         self.dir = foldername
         general_line = file.index('[General]')
@@ -47,7 +48,7 @@ class Map():
             current = [i.lstrip() for i in current]
             self.events.append(current)
             cur_line += 1
-
+        # внесение информации в атрибуты элемента класса
         self.audio_file_name = self.general['AudioFilename']
         self.mode = self.general['Mode']
         self.audio_lead_in = self.general['AudioLeadIn']
@@ -61,7 +62,7 @@ class Map():
 
         self.HP = self.difficulty['HPDrainRate']
         self.OD = self.difficulty['OverallDifficulty']
-
+        # загрузка сладеров, нот с карты
         objects_line = file.index('[HitObjects]')
         self.objects = []
         cur_line = objects_line + 1
@@ -79,7 +80,7 @@ class Map():
             else:
                 end_time = 0
             self.objects[i] = [int(x) // (512 // 4), int(time), int(type), int(end_time)]
-
+        # загрузка фона карты
         for elem in self.events:
             event_type, *another = elem
             if event_type == '0':
@@ -87,11 +88,12 @@ class Map():
                 self.x_offset = int(x_offset)
                 self.y_offset = int(y_offset)
                 self.background_file = background_file.rstrip('"').lstrip('"')
-                self.background = pygame.transform.smoothscale(pygame.image.load(f'maps/{self.dir}/{self.background_file}'), (1120, 720))
+                self.background = pygame.transform.smoothscale(
+                    pygame.image.load(f'maps/{self.dir}/{self.background_file}'), (1120, 720))
                 self.small_background = pygame.transform.smoothscale(self.background, (120, 80))
 
 
-def import_maps():  # Создает объекты класса Map, помещает их в maps
+def import_maps():  # создает объекты класса Map, помещает их в maps
     songs = os.listdir(path="maps")
     maps = []
     for song in songs:
