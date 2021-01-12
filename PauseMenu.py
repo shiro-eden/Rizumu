@@ -3,7 +3,7 @@ from GameParameter import display
 from GameEffects import load_image
 from Button import Button
 
-st_x = 400
+st_x = 350
 
 background_image = load_image('pause_background.png')
 
@@ -19,11 +19,11 @@ back_button_image = (load_image('pause_back_0.png'),
 
 class PauseMenu:
     def __init__(self, map_objects, map_background):
-        self.result = -1
+        self.result = -1  # переменная для отслеживания состояния экрана
 
-        self.map_keys = map_objects[0]
-        self.map_objects = map_objects[1:]
-        self.map_background = map_background
+        self.map_keys = map_objects[0]  # изображения клавиш
+        self.map_objects = map_objects[1:]  # изображений нот
+        self.map_background = map_background  # изображений заднего фона
         self.map_background.set_alpha(100)
 
         self.continue_btn = Button(455, 200, 238, 72, '', continue_button_image, self.continue_map)
@@ -44,20 +44,20 @@ class PauseMenu:
     def back(self):
         self.result = 2
 
-    def render_pause(self):
+    def render_pause(self):  # отрисовка экрана паузы
         display.blit(background_image, (0, 0))
 
         self.continue_btn.draw(0, 0)
         self.restart_btn.draw(0, 0)
         self.back_btn.draw(0, 0)
 
-    def render_map(self):
+    def render_map(self):  # отрисовка карты во время обратного отсчета
         display.fill((0, 0, 0))
         display.blit(self.map_background, (0, 0))
 
         display.blit(self.map_keys[0], (st_x, 0))
 
-        for notes in self.map_objects[0]:
+        for notes in self.map_objects[0]:  # отрисовка одиночных нот
             if len(notes) == 1:
                 sprite = notes[0][0]
                 display.blit(sprite.image, sprite.rect)
@@ -66,7 +66,7 @@ class PauseMenu:
                     sprite = note[0]
                     display.blit(sprite.image, sprite.rect)
 
-        for slider in self.map_objects[1]:
+        for slider in self.map_objects[1]:  # отрисовка длинных нот
             for obj in slider:
                 try:
                     sprite = obj[0]

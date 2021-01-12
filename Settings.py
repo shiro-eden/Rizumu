@@ -1,6 +1,5 @@
 import pygame
-import math
-from GameParameter import clock, fps, display
+from GameParameter import display
 from GameEffects import drawing_text, load_image
 from Button import Button
 
@@ -39,7 +38,7 @@ class Settings:
         self.scroll_speed = int(self.values['scroll_speed'])  # скорость нот в игре
 
         # кнопка перехода к экрану выбора карт
-        self.exit_btn = Button(-30, 650, 236, 92, '', exit_button_image, self.back)
+        self.exit_btn = Button(-30, 620, 236, 92, '', exit_button_image, self.back)
 
         # кнопки измения громкости музыкки
         self.volume_up_btn = Button(960, 100, 100, 50, '', changer_btn_up_image,

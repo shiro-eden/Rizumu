@@ -16,8 +16,8 @@ from Settings import Settings, load_settings
 settings_values = load_settings()
 maps = import_maps()
 maps.sort(key=lambda x: (x.artist, x.title))
-for i in range(len(maps)):
-    maps[i] = [500, 100 + i * 100, maps[i]]  # преобразование списка карт в кортежи с их координатами на экране
+for i in range(len(maps)):  # преобразование списка карт в кортежи с их координатами на экране
+    maps[i] = [500, 100 + i * 100, maps[i]]
 
 closed = False
 
@@ -27,7 +27,7 @@ def start_menu():
     if closed:
         return
     # функция для создания, отрисовки стартового меню
-    pygame.mixer.music.load(load_music('menu_music.wav'))  # загрузка фоновой музыки
+    pygame.mixer.music.load(load_music('menu_music.mp3'))  # загрузка фоновой музыки
     pygame.mixer.music.set_volume(0.1 * int(settings_values['music_volume']))
     pygame.mixer.music.play(-1)
     screen = StartMenu()
@@ -220,7 +220,7 @@ def select_character():
 
     game = True
     res = -1
-    pygame.mixer.music.load(load_music('menu_music.wav'))
+    pygame.mixer.music.load(load_music('menu_music.mp3'))
     pygame.mixer.music.set_volume(0.1 * int(settings_values['music_volume']))
     pygame.mixer.music.play(-1)
 

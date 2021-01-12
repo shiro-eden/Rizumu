@@ -1,5 +1,4 @@
-import pygame
-from GameParameter import clock, fps, display
+from GameParameter import display
 from GameEffects import drawing_text, load_image
 from Button import Button
 import sqlite3
@@ -47,7 +46,6 @@ class ResultScreen:
         mapset_id = map[2].mapset_id
         time = str(dt.datetime.now().time()).split('.')[0]
         date = str(dt.datetime.now().date())
-        print(time, date)
         con = sqlite3.connect('records.db')
         cur = con.cursor()
         cur.execute(
@@ -57,10 +55,13 @@ class ResultScreen:
     def render(self):
         display.blit(background, (0, 0))
         display.blit(self.rank, (775, 110))
+
+        # отрисовка точности игрока
         drawing_text(self.accuracy, (790, 400), (255, 255, 255), 60, font_type='corp_round_v1.ttf')
         display.blit(miss, (0, 40))
         drawing_text(self.marks[0], (65, 100), (200, 0, 0), 50, font_type='corp_round_v1.ttf')
 
+        # отрисовка набранных оценок
         display.blit(bad, (290, 40))
         drawing_text(self.marks[1], (355, 100), (230, 0, 150), 50, font_type='corp_round_v1.ttf')
 
@@ -76,6 +77,7 @@ class ResultScreen:
         display.blit(marvelous, (290, 315))
         drawing_text(self.marks[5], (355, 390), (235, 250, 255), 50, font_type='corp_round_v1.ttf')
 
+        # отрисовка максимального комбо игрока
         drawing_text(self.count_combo, (210, 520), (255, 255, 255), 50, font_type='corp_round_v1.ttf')
         score_width = len(self.score) * 25
         x = 890 - score_width // 2

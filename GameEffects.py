@@ -1,7 +1,7 @@
 import pygame
 import os
 import sys
-from GameParameter import display, clock
+from GameParameter import display
 
 
 def load_fonts(font_type):  # загрузка шрифта

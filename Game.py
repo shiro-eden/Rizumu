@@ -92,8 +92,7 @@ class Game:
         settings_values = load_settings()  # загрузка настроек игрока
         v = int(settings_values['scroll_speed'])  # обновление значения скорости игрока
         time_uprise = ((720 - 130) / v * 1000) // 1  # обновление времени начала движения нот
-        settings_values = load_settings()
-        v = int(settings_values['scroll_speed'])  # px/second
+
         self.map = map[2]
         self.score = 0  # общий счет игрока
         self.accuracy = 100  # точность нажатий игрока
@@ -198,6 +197,7 @@ class Game:
 
         # массив для отслеживания, на каких линиях нужно сделать вспышки
         self.lightnings = [-1, -1, -1, -1]
+        self.time = pygame.time.get_ticks()  # время начала игры
 
     def render(self):
         self.time_now = (pygame.time.get_ticks() - self.time)

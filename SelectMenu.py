@@ -2,7 +2,7 @@ import pygame
 import sqlite3
 from GameParameter import display, fps
 from Button import Button
-from GameEffects import drawing_text, load_image, load_fonts
+from GameEffects import drawing_text, load_image
 from Settings import load_settings
 
 exit_button_image = [load_image(f'menu_back_{i}.png') for i in range(2)]
@@ -25,17 +25,21 @@ shift_v = 300
 class SelectMenu:
     def __init__(self, maps):
         settings_values = load_settings()
-        self.result = -1
+        self.result = -1  # переменная для отслеживания состояния экрана
 
         self.maps = maps
         # создание кнопок
-        self.exit_btn = Button(-30, 615, 222, 92, '', exit_button_image, self.back, glow=glow_left)
+        self.exit_btn = Button(-30, 615, 222, 92, '', exit_button_image, self.back,
+                               glow=glow_left)
 
-        self.chr_btn = Button(-30, -30, 223, 92, '', chr_button_image, self.chr_menu, glow=glow_left)
+        self.chr_btn = Button(-30, -30, 223, 92, '', chr_button_image, self.chr_menu,
+                              glow=glow_left)
 
-        self.play_btn = Button(908, 650, 222, 92, '', play_button_image, self.start_game, glow=glow_right)
+        self.play_btn = Button(908, 650, 222, 92, '', play_button_image, self.start_game,
+                               glow=glow_right)
 
-        self.settings_btn = Button(908, 0, 223, 92, '', settings_button_image, self.open_settings, glow=glow_right)
+        self.settings_btn = Button(908, 0, 223, 92, '', settings_button_image, self.open_settings,
+                                   glow=glow_right)
         self.active_map = 0
         self.maps[0][0] -= 30
         self.menu_background = self.maps[self.active_map][2].background
@@ -59,8 +63,8 @@ class SelectMenu:
             elem[5] = 'Combo: ' + str(elem[5]) + 'x'
             elem[4] = str('%.2f' % elem[4]) + '%'
             for i in range(3, 8):
-                elem[i] = drawing_text(str(elem[i]), (-100, -100), font_color=(255, 255, 255), font_size=15,
-                                       font_type='rizumu.ttf')
+                elem[i] = drawing_text(str(elem[i]), (-100, -100), font_color=(255, 255, 255),
+                                       font_size=15)
             if elem[1] in self.records:
                 self.records[elem[1]].append(elem)
             else:
@@ -129,12 +133,14 @@ class SelectMenu:
                 if title in self.cache:
                     display.blit(self.cache[title], (x + 130, y + 10))
                 else:
-                    self.cache[title] = drawing_text(title, (x + 130, y + 10), font_color=pygame.Color(255, 255, 255),
+                    self.cache[title] = drawing_text(title, (x + 130, y + 10),
+                                                     font_color=pygame.Color(255, 255, 255),
                                                      font_size=20)
                 if artist in self.cache:
                     display.blit(self.cache[artist], (x + 130, y + 32))
                 else:
-                    self.cache[artist] = drawing_text(artist, (x + 130, y + 32), font_color=pygame.Color(200, 200, 200),
+                    self.cache[artist] = drawing_text(artist, (x + 130, y + 32),
+                                                      font_color=pygame.Color(200, 200, 200),
                                                       font_size=15, italic=True)
                 if version in self.cache:
                     display.blit(self.cache[version], (x + 130, y + 50))
