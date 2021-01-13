@@ -220,9 +220,6 @@ def select_character():
 
     game = True
     res = -1
-    pygame.mixer.music.load(load_music('menu_music.mp3'))
-    pygame.mixer.music.set_volume(0.1 * int(settings_values['music_volume']))
-    pygame.mixer.music.play(-1)
 
     while not transition.get_transition():  # отображение перехода
         for event in pygame.event.get():
@@ -397,6 +394,7 @@ def result_game(count_combo, score, marks, accuracy, map):  # экран с ре
 if __name__ == '__main__':
     pygame.init()
     pygame.display.set_caption('リズム')
+    pygame.display.set_icon(load_image("icon.ico"))
     transition = AnimationTransition()
     size = width, height = 1120, 720
     display = pygame.display.set_mode(size)

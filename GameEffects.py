@@ -33,7 +33,8 @@ def drawing_text(text, cords, font_color=pygame.Color('black'), font_size=30,
 
 def load_image(filename):  # функция загрузки изображений
     fullname = "image/" + filename
-    if not fullname.endswith('.png') and not fullname.endswith('.jpg'):
+    if not fullname.endswith('.png') and not fullname.endswith('.jpg')\
+            and not fullname.endswith('.ico'):
         print(f"Файл '{fullname}' не пдходит по формату")
         sys.exit()
     if not os.path.isfile(fullname):
