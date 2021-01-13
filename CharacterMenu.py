@@ -43,8 +43,8 @@ left_button_image = (load_image('left_button_0.png'),
                      load_image('left_button_1.png'))
 right_button_image = (load_image('right_button_0.png'),
                       load_image('right_button_1.png'))
-confirm_button_image = (load_image('confirm_button_0.png'),
-                        load_image('confirm_button_1.png'))
+confirm_button_image = (load_image('confirm_btn_0.png'),
+                        load_image('confirm_btn_1.png'))
 exit_button_image = [load_image(f'menu_back_{i}.png') for i in range(2)]
 menu_background = [load_image('menu_background.png'),
                    load_image('menu_back+.png'),
@@ -75,8 +75,8 @@ class CharacterMenu:  # класс меню выбора персонажа
         self.right_button = Button(820, 310, 100, 100, '', right_button_image)
 
         # кнопки выхода к экрану выбора карт(exit_btn) и подтверждению выбора персонажа(confirm_btn)
-        self.exit_btn = Button(-30, 640, 236, 92, '', exit_button_image, self.back)
-        self.confirm_btn = Button(1037, 640, 86, 86, '', confirm_button_image, self.confirm_chr)
+        self.exit_btn = Button(-30, 615, 236, 92, '', exit_button_image, self.back)
+        self.confirm_btn = Button(908, 650, 222, 92, '', confirm_button_image, self.confirm_chr)
 
     def render(self):
         display.blit(menu_background[0], (0, 0))  # отрисовка изображений заднего фона

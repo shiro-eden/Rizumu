@@ -38,9 +38,9 @@ class ResultScreen:
             self.rank = load_image('skin/rank_D.png')
         self.accuracy = str('%.2f' % accuracy) + '%'
 
-        self.back_btn = Button(-40, 610, 236, 92, '', back_button_image, self.back)
+        self.back_btn = Button(-30, 630, 236, 92, '', back_button_image, self.back)
 
-        self.restart_btn = Button(924, 610, 236, 92, '', restart_button_image, self.restart)
+        self.restart_btn = Button(908, 630, 236, 92, '', restart_button_image, self.restart)
 
         map_id = map[2].map_id
         mapset_id = map[2].mapset_id
