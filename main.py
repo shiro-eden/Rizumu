@@ -2,7 +2,7 @@ import pygame
 
 from Map import import_maps
 from GameParameter import clock, fps, fps_menu
-from GameEffects import AnimationTransition, load_image, load_music
+from GameEffects import AnimationTransition, load_image
 
 from StartMenu import StartMenu  # импорты экранов
 from SelectMenu import SelectMenu
@@ -27,9 +27,6 @@ def start_menu():
     if closed:
         return
     # функция для создания, отрисовки стартового меню
-    pygame.mixer.music.load(load_music('menu_music.mp3'))  # загрузка фоновой музыки
-    pygame.mixer.music.set_volume(0.1 * int(settings_values['music_volume']))
-    pygame.mixer.music.play(-1)
     screen = StartMenu()
     game = True
     res = -1  # переменная, возвращающая состояние экрана
