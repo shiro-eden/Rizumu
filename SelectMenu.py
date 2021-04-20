@@ -1,8 +1,12 @@
 import pygame
 import sqlite3
+import sys
+import requests
 from GameParameter import display, fps
 from Button import Button
+from LoginMenu import LoginMenu
 from GameEffects import drawing_text, load_image
+from PyQt5.QtWidgets import QApplication
 from Settings import load_settings
 
 exit_button_image = [load_image(f'menu_back_{i}.png') for i in range(2)]
@@ -19,6 +23,7 @@ records_rect = load_image('record_rect.png')
 settings_values = load_settings()
 glow_left = load_image('glow_left.png')
 glow_right = load_image('glow_right.png')
+profile_button_image = [load_image(f'profile_{i}.png') for i in range(2)]
 shift_v = 300
 
 
@@ -34,6 +39,8 @@ class SelectMenu:
 
         self.chr_btn = Button(-30, -30, 223, 92, '', chr_button_image, self.chr_menu,
                               glow=glow_left)
+
+        self.prf_btn = Button(210, -5, 92, 85, '', profile_button_image, self.login_profile,)
 
         self.play_btn = Button(908, 650, 222, 92, '', play_button_image, self.start_game,
                                glow=glow_right)
@@ -84,6 +91,24 @@ class SelectMenu:
 
     def open_settings(self):
         self.result = 4
+
+    def login_profile(self):
+        app = QApplication(sys.argv)
+        ex = LoginMenu()
+        ex.show()
+        app.exec()
+        key = ex.key
+        id = ex.user_id
+        con = sqlite3.connect('records.db')
+        cur = con.cursor()
+        res = cur.execute("SELECT map_id, score, accuracy, combo, mark, date FROM Records").fetchall()
+        js = {
+            'records': [i for i in res],
+            'key': key,
+            'user_id': id
+        }
+        requests.post('http://127.0.0.1:8080/api/get_records/', json=js).json()
+
 
     def get_result(self):
         return self.result
@@ -155,6 +180,7 @@ class SelectMenu:
         self.exit_btn.draw(0, 0)
         self.play_btn.draw(0, 0)
         self.chr_btn.draw(0, 0)
+        self.prf_btn.draw(0, 0)
         self.settings_btn.draw(0, 0)
         # удаление из словаря с рекордами рекорда, если для какой-то карты их больше 6
         if int(self.maps[self.active_map][2].map_id) in self.records:
@@ -164,7 +190,7 @@ class SelectMenu:
         else:
             records = []
         for y, elem in enumerate(records):  # отрисовка рекорда
-            elem_id, map_id, mapset_id, score, accuracy, combo, date, time = elem
+            elem_id, map_id, mapset_id, score, accuracy, combo, mark, date, time = elem
             y *= 90
             y += 100
             display.blit(records_rect, (-200, y))

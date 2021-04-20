@@ -26,6 +26,10 @@ def load_settings():  # функия получения настроек пол�
         settings['scroll_speed'] = 1000
     if 'character' not in settings:
         settings['character'] = 2
+    if 'key' not in settings:
+        settings['key'] = -1
+    if 'id' not in settings:
+        settings['id'] = -1
     return settings
 
 
@@ -110,4 +114,6 @@ class Settings:
         print('scroll_speed:', self.scroll_speed, sep='', file=file)
         print('music_volume:', self.music_volume, sep='', file=file)
         print('character:', self.values['character'], sep='', file=file)
+        print('key:', self.values['key'], sep='', file=file)
+        print('id:', self.values['id'], sep='', file=file)
         file.close()

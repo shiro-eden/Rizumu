@@ -1,8 +1,10 @@
 from GameParameter import display
 from GameEffects import drawing_text, load_image
 from Button import Button
+from Settings import load_settings
 import sqlite3
 import datetime as dt
+import requests
 
 background = load_image('result_background.png')
 
@@ -25,22 +27,29 @@ class ResultScreen:
         self.marks = [str(i) + 'x' for i in marks.values()]
 
         if accuracy == 100:
+            mark = 'SS'
             self.rank = load_image('skin/rank_SS.png')
         elif accuracy > 95:
+            mark = 'S'
             self.rank = load_image('skin/rank_S.png')
         elif accuracy > 90:
+            mark = 'A'
             self.rank = load_image('skin/rank_A.png')
         elif accuracy > 80:
+            mark = 'B'
             self.rank = load_image('skin/rank_B.png')
         elif accuracy > 70:
+            mark = 'C'
             self.rank = load_image('skin/rank_C.png')
         else:
+            mark = 'D'
             self.rank = load_image('skin/rank_D.png')
         self.accuracy = str('%.2f' % accuracy) + '%'
 
         self.back_btn = Button(-30, 630, 236, 92, '', back_button_image, self.back)
 
         self.restart_btn = Button(908, 630, 236, 92, '', restart_button_image, self.restart)
+
 
         map_id = map[2].map_id
         mapset_id = map[2].mapset_id
@@ -49,8 +58,16 @@ class ResultScreen:
         con = sqlite3.connect('records.db')
         cur = con.cursor()
         cur.execute(
-            f"INSERT INTO Records(map_id, mapset_id, score, accuracy, combo, date, time) VALUES({map_id}, {mapset_id}, {score}, {accuracy}, {count_combo}, '{date}', '{time}')")
+            f"INSERT INTO Records(map_id, mapset_id, score, accuracy, combo, date, time, mark) VALUES({map_id}, {mapset_id}, {score}, {accuracy}, {count_combo}, '{date}', '{time}', '{mark}')")
         con.commit()
+        values = load_settings()
+        if values['key'] != '-1' and values['key'] != '-1':
+            js = {
+                'records': [[map_id, score, accuracy, count_combo, mark]],
+                'key': values['key'],
+                'user_id': int(values['id'])
+            }
+            requests.post('http://127.0.0.1:8080/api/get_records/', json=js).json()
 
     def render(self):
         display.blit(background, (0, 0))

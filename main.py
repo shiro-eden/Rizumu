@@ -347,6 +347,7 @@ def result_game(count_combo, score, marks, accuracy, map):  # экран с ре
     if closed:
         return
     screen = ResultScreen(count_combo, score, marks, accuracy, map)
+
     game = True
 
     transition.frame = -1
@@ -397,3 +398,9 @@ if __name__ == '__main__':
     display = pygame.display.set_mode(size)
     start_menu()
     pygame.quit()
+    values = load_settings()
+    values['key'] = '-1'
+    values['id'] = '-1'
+    with open('user_settings.txt', 'w') as file:
+        for elem in values:
+            print(f'{elem.rstrip()}:{values[elem]}', sep='', file=file)
