@@ -57,8 +57,8 @@ class LoginMenu(QWidget):
         self.log_btn.clicked.connect(self.login)
 
         self.label = QLabel(self)
-        self.label.move(170, 360)
-        self.label.resize(90, 40)
+        self.label.move(100, 150)
+        self.label.resize(90, 50)
         self.label.setText('<a href="http://rizumu-web.herokuapp.com/register"> Регестрация </a>')
 
         self.label.setOpenExternalLinks(True)
@@ -66,7 +66,7 @@ class LoginMenu(QWidget):
     def login(self):
         email = self.log_inp.text()
         password = self.pas_inp.text()
-        js = requests.get(f'http://127.0.0.1:8080/api/synchronization/{email};{password}').json()
+        js = requests.get(f'http://rizumu-web.herokuapp.com/api/synchronization/{email};{password}').json()
         if js['result'] == 1:
             con = sqlite3.connect('records.db')
             cur = con.cursor()

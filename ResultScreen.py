@@ -67,7 +67,7 @@ class ResultScreen:
                 'key': values['key'],
                 'user_id': int(values['id'])
             }
-            requests.post('http://127.0.0.1:8080/api/get_records/', json=js).json()
+            requests.post('http://rizumu-web.herokuapp.com/api/get_records/', json=js).json()
 
     def render(self):
         display.blit(background, (0, 0))

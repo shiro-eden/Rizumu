@@ -107,7 +107,7 @@ class SelectMenu:
             'key': key,
             'user_id': id
         }
-        requests.post('http://127.0.0.1:8080/api/get_records/', json=js).json()
+        requests.post('http://rizumu-web.herokuapp.com/api/get_records/', json=js).json()
 
 
     def get_result(self):
