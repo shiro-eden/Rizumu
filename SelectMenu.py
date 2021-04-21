@@ -99,6 +99,8 @@ class SelectMenu:
         app.exec()
         key = ex.key
         id = ex.user_id
+        if id==-1:
+            return
         con = sqlite3.connect('records.db')
         cur = con.cursor()
         res = cur.execute("SELECT map_id, score, accuracy, combo, mark, date FROM Records").fetchall()

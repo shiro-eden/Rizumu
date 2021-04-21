@@ -1,5 +1,5 @@
 music_volume:100
 scroll_speed:1000
 character:2
-key:DqzOuBkZqLHMWKGZcPszGFlEf2hJ0B
-id:1
+key:-1
+id:-1

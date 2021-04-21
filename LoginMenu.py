@@ -2,12 +2,12 @@ from PyQt5.QtWidgets import QInputDialog
 import sys
 import datetime as dt
 import sqlite3
-from PyQt5.QtWidgets import QWidget, QApplication, QPushButton, QLabel, QLineEdit
+from PyQt5.QtWidgets import QWidget, QApplication, QPushButton, QLabel, QLineEdit, QStatusBar, QMainWindow
 import requests
 from Settings import load_settings
 
 
-class LoginMenu(QWidget):
+class LoginMenu(QMainWindow):
     def __init__(self):
         super().__init__()
         self.initUI()
@@ -19,10 +19,12 @@ class LoginMenu(QWidget):
     def run(self):
         self.key = ''
         self.user_id = -1
-
+        self.statusBar = QStatusBar()
+        self.setStatusBar(self.statusBar)
         self.info = QLabel(self)
         self.info.setText('Вход в аккаунт Rizumu')
         self.info.move(10, 10)
+        self.info.resize(250, 50)
         font = self.info.font()
         font.setPointSize(16)
         self.info.setFont(font)
@@ -59,14 +61,19 @@ class LoginMenu(QWidget):
         self.label = QLabel(self)
         self.label.move(100, 150)
         self.label.resize(90, 50)
-        self.label.setText('<a href="http://rizumu-web.herokuapp.com/register"> Регестрация </a>')
+        self.label.setText('<a href="http://rizumu-web.herokuapp.com/register"> Регистрация </a>')
 
         self.label.setOpenExternalLinks(True)
 
     def login(self):
         email = self.log_inp.text()
         password = self.pas_inp.text()
-        js = requests.get(f'http://rizumu-web.herokuapp.com/api/synchronization/{email};{password}').json()
+        try:
+            js = requests.get(f'http://rizumu-web.herokuapp.com/api/synchronization/{email};{password}').json()
+        except Exception as ex:
+            self.statusBar.showMessage(f'Не подключиться к серверу. {ex}')
+            return
+        print(js)
         if js['result'] == 1:
             con = sqlite3.connect('records.db')
             cur = con.cursor()
@@ -92,6 +99,8 @@ class LoginMenu(QWidget):
                     print(f'{elem.rstrip()}:{values[elem]}', sep='', file=file)
 
             self.close()
+        else:
+            self.statusBar.showMessage('Пользователь с таким именем и паролем не найден')
 
 
 def login():
